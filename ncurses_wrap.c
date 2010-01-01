@@ -819,7 +819,7 @@ static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
     int halfdelay = NUM2INT(rb_iv_get(mNcurses, "@halfdelay"));
     int infd = NUM2INT(rb_iv_get(mNcurses, "@infd"));
     double screen_delay = halfdelay * 0.1;
-#ifdef NCURSES_VERSION
+#if defined(NCURSES_VERSION) && defined(NCURSES_OPAQUE) && !NCURSES_OPAQUE
     int windelay = c_win->_delay;
 #else
     int windelay = 0;
@@ -843,7 +843,7 @@ static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
     starttime = tv.tv_sec + tv.tv_usec * 1e-6;
 #endif
     finishtime = starttime + delay;
-#ifdef NCURSES_VERSION
+#if defined(NCURSES_VERSION) && defined(NCURSES_OPAQUE) && !NCURSES_OPAQUE
     c_win->_delay = 0;
 #endif
     while (doupdate() /* detects resize */, (result = wgetch(c_win)) == ERR) {
@@ -898,7 +898,7 @@ static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
 #endif
 #endif
     }
-#ifdef NCURSES_VERSION
+#if defined(NCURSES_VERSION) && defined(NCURSES_OPAQUE) && !NCURSES_OPAQUE
     c_win->_delay = windelay;
 #endif
     return result;
