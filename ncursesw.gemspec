@@ -42,6 +42,7 @@ spec = Gem::Specification.new do |s|
     "ncurses_wrap.c",
     "ncurses_wrap.h",
     "lib/ncursesw.rb",
+    "lib/ncurses_sugar.rb",
     "panel_wrap.c",
     "panel_wrap.h",
     "menu_wrap.c",
