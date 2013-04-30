@@ -2725,11 +2725,7 @@ static void init_safe_functions(void)
     NCFUNC(setlocale, 2);
 #endif
 }
-#ifdef HAVE_NCURSESW_CURSES_H
 void Init_ncursesw_bin(void)
-#else
-void Init_ncurses_bin(void)
-#endif
 {
     mNcurses = rb_define_module("Ncurses");
     eNcurses = rb_define_class_under(mNcurses, "Exception", rb_eRuntimeError);
