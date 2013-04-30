@@ -1,4 +1,4 @@
-$Id: TODO,v 1.6 2003/03/22 22:55:27 t-peters Exp $
+$Id: TODO,v 1.6 2003-03-22 22:55:27 t-peters Exp $
 
 This is the complete list of functions present in ncurses that have not yet
 been wrapped by ncurses-ruby:

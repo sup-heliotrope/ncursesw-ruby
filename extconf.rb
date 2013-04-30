@@ -2,7 +2,7 @@
 
 # ncurses-ruby is a ruby module for accessing the FSF's ncurses library
 # (C) 2002, 2004 Tobias Peters <t-peters@users.berlios.de>
-# (C) 2005, 2009 Tobias Herzke
+# (C) 2005, 2009, 2011 Tobias Herzke
 #
 # This module is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,7 @@
 # License along with this module; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-# $Id: extconf.rb,v 1.14 2009/05/03 14:13:27 t-peters Exp $
+# $Id: extconf_ncursesw.rb,v 1.1 2011-05-30 23:05:50 t-peters Exp $
 
 require "mkmf"
 
@@ -28,22 +28,16 @@ $CXXFLAGS  = $CFLAGS
 have_header("unistd.h")
 have_header("locale.h")
 
-if have_header("ncurses.h")
-  curses_header = "ncurses.h"
-elsif have_header("ncurses/curses.h")
-  curses_header = "ncurses/curses.h"
-elsif have_header("curses.h")
-  curses_header = "curses.h"
+if have_header("ncursesw/curses.h")
+  curses_header = "ncursesw/curses.h"
 else
-  raise "ncurses header file not found"
+  raise "ncursesw header file not found"
 end
 
 if have_library("ncursesw", "wmove")
   curses_lib = "ncursesw"
-elsif have_library("pdcurses", "wmove")
-  curses_lib = "pdcurses"
 else
-  raise "ncurses library not found"
+  raise "ncursesw library not found"
 end
 
 have_func("newscr")
@@ -122,16 +116,16 @@ have_func("assume_default_colors")
 have_func("attr_get")
 
 puts "checking for the panel library..."
-if have_header("panel.h")
+if have_header("ncursesw/panel.h")
   have_library("panelw", "panel_hidden")
 end
 puts "checking for the form library..."
-if have_header("form.h")
+if have_header("ncursesw/form.h")
   have_library("formw", "new_form")
 end
 puts "checking for the menu library..."
-if have_header("menu.h")
-  have_library("menu", "new_menu")
+if have_header("ncursesw/menu.h")
+  have_library("menuw", "new_menu")
 end
 
 create_makefile('ncursesw_bin')

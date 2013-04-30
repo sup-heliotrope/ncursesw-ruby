@@ -19,12 +19,18 @@
  *  License along with this module; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
+ * Changes
+ * (C) 2011 Tobias Herzke
  */
 
-#if !defined(MENU_HH) && defined(HAVE_MENU_H)
+#if !defined(MENU_HH) && (defined(HAVE_MENU_H) || defined(HAVE_NCURSESW_MENU_H))
 #define MENU_HH
 
+#ifdef HAVE_MENU_H
 #include <menu.h>
+#else
+#include <ncursesw/menu.h>
+#endif
 #include <ruby.h>
 
 extern VALUE mMenu;

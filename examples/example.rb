@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: example.rb,v 1.4 2002/03/04 13:24:29 t-peters Exp $
+# $Id: example.rb,v 1.4 2002-03-04 13:24:29 t-peters Exp $
 
 # This file provides an example for the usage of the ncurses-ruby module.
 # Copyright (C) 2002 Tobias Peters <t-peters@users.berlios.de>
@@ -59,7 +59,7 @@
 
 
 
-require "ncurses"
+require "ncursesw"
 
 def moving(scr)
   scr.clear() # clear screen
