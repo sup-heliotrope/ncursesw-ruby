@@ -28,16 +28,22 @@ $CXXFLAGS  = $CFLAGS
 have_header("unistd.h")
 have_header("locale.h")
 
-if have_header("ncursesw/curses.h")
-  curses_header = "ncursesw/curses.h"
+if have_header("ncurses.h")
+  curses_header = "ncurses.h"
+elsif have_header("ncurses/curses.h")
+  curses_header = "ncurses/curses.h"
+elsif have_header("curses.h")
+  curses_header = "curses.h"
 else
-  raise "ncursesw header file not found"
+  raise "ncurses header file not found"
 end
 
 if have_library("ncursesw", "wmove")
   curses_lib = "ncursesw"
+elsif have_library("pdcurses", "wmove")
+  curses_lib = "pdcurses"
 else
-  raise "ncursesw library not found"
+  raise "ncurses library not found"
 end
 
 have_func("newscr")
@@ -116,16 +122,16 @@ have_func("assume_default_colors")
 have_func("attr_get")
 
 puts "checking for the panel library..."
-if have_header("ncursesw/panel.h")
+if have_header("panel.h")
   have_library("panelw", "panel_hidden")
 end
 puts "checking for the form library..."
-if have_header("ncursesw/form.h")
+if have_header("form.h")
   have_library("formw", "new_form")
 end
 puts "checking for the menu library..."
-if have_header("ncursesw/menu.h")
-  have_library("menuw", "new_menu")
+if have_header("menu.h")
+  have_library("menu", "new_menu")
 end
 
 create_makefile('ncursesw_bin')
