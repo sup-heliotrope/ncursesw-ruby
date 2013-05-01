@@ -8,7 +8,7 @@
 # Copyright (c) 2001 by Pradeep Padala. This document may be distributed 
 # under the terms set forth in the LDP license at linuxdoc.org/COPYRIGHT.html.
  
-require 'ncurses.rb'
+require 'ncursesw.rb'
 
 begin
   scr = Ncurses.initscr()

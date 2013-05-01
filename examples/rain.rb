@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: rain.rb,v 1.6 2005/08/22 21:41:49 t-peters Exp $
+# $Id: rain.rb,v 1.6 2005-08-22 21:41:49 t-peters Exp $
 
 # This program is a translation of the popular rain.c demo program from the
 # ncurses library distribution.
@@ -40,7 +40,7 @@
 
 
 
-require "ncurses"
+require "ncursesw"
 
 
 # A class responsible for raindrop drawing
