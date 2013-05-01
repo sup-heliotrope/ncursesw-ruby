@@ -836,20 +836,28 @@ static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
     c_win->_delay = 0;
 #endif
     while (doupdate() /* detects resize */, (result = wgetch(c_win)) == ERR) {
-        gettimeofday(&tv, &tz);
-        nowtime = tv.tv_sec + tv.tv_usec * 1e-6;
-        delay = finishtime - nowtime;
-	if (delay <= 0) break;
+      rb_fdset_t fdsets[3];
+      rb_fdset_t *rfds = NULL;
+      gettimeofday(&tv, &tz);
+      nowtime = tv.tv_sec + tv.tv_usec * 1e-6;
+      delay = finishtime - nowtime;
+      if (delay <= 0) break;
 
-	/* Check for terminal size change every resize_delay seconds */
-        if (resize_delay > delay) resize_delay = delay;
-        tv.tv_sec = (time_t)resize_delay;
-        tv.tv_usec = (unsigned)( (resize_delay - tv.tv_sec) * 1e6 );
+      /* Check for terminal size change every resize_delay seconds */
+      if (resize_delay > delay) resize_delay = delay;
+      tv.tv_sec = (time_t)resize_delay;
+      tv.tv_usec = (unsigned)( (resize_delay - tv.tv_sec) * 1e6 );
 
-	/* sleep on infd until input is available or tv reaches timeout */
-	FD_ZERO(&in_fds);
-	FD_SET(infd, &in_fds);
-	rb_thread_select(infd + 1, &in_fds, NULL, NULL, &tv);
+      /* sleep on infd until input is available or tv reaches timeout */
+      FD_ZERO(&in_fds);
+      FD_SET(infd, &in_fds);
+      //rb_thread_fd_select(infd + 1, &in_fds, NULL, NULL, &tv);
+
+      rfds = &fdsets[0];
+      rb_fd_init(rfds);
+      rb_fd_copy(rfds, &in_fds, infd +1);
+
+      rb_thread_fd_select(infd + 1, rfds, NULL, NULL, &tv);
     }
 #if defined(NCURSES_VERSION) && defined(NCURSES_OPAQUE) && !NCURSES_OPAQUE
     c_win->_delay = windelay;
@@ -2349,7 +2357,8 @@ static VALUE rbncurs_getparyx(VALUE dummy, VALUE rb_win, VALUE rb_y, VALUE rb_x)
 }
 static VALUE rbncurs_getsyx(VALUE dummy, VALUE rb_y, VALUE rb_x)
 {
-    int y,x;
+    int y = 0;
+    int x = 0;
     if ((rb_obj_is_instance_of(rb_y, rb_cArray) != Qtrue)
         || (rb_obj_is_instance_of(rb_x, rb_cArray) != Qtrue)) {
         rb_raise(rb_eArgError,
