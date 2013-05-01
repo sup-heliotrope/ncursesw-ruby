@@ -22,7 +22,7 @@
 
 require "mkmf"
 
-$CFLAGS  += " -g"
+$CFLAGS  += " -g -Wformat -Werror=format-security"
 $CXXFLAGS  = $CFLAGS
 
 have_header("unistd.h")
