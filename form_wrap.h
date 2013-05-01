@@ -18,12 +18,19 @@
  *  License along with this module; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
+ * Changes
+ * (C) 2011 Tobias Herzke
  */
 
-#if !defined(FORM_HH) && defined(HAVE_FORM_H)
+#if !defined(FORM_HH) && (defined(HAVE_FORM_H) || defined(HAVE_NCURSESW_FORM_H))
 #define FORM_HH
 
+#ifdef HAVE_FORM_H
 #include <form.h>
+#else
+#include <ncursesw/form.h>
+#endif
+
 #include <ruby.h>
 
 extern VALUE mForm;

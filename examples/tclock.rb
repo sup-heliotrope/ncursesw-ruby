@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# $Id: tclock.rb,v 1.6 2002/02/28 13:50:10 t-peters Exp $
+# $Id: tclock.rb,v 1.6 2002-02-28 13:50:10 t-peters Exp $
 
 # tclock - analog/digital clock for curses, translated to ruby
 # Copyright (C) 2002 Tobias Peters <t-peters@users.berlios.de>
@@ -30,7 +30,7 @@
 # clearly marked as such.                                                 #
 ###########################################################################
 
-require "ncurses"
+require "ncursesw"
 PI = Math::PI
 
 def sign(_x)

@@ -8,7 +8,7 @@ SUMMARY = 'This wrapper provides access to the functions, macros, global variabl
 
 spec = Gem::Specification.new do |s|
   s.name        = 'ncursesw-sup'
-  s.version     = '1.2.4.4'
+  s.version     = '1.3.0'
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Tobias Herzke']
   s.email       = ['t-peters@users.berlios.de']
@@ -42,6 +42,7 @@ spec = Gem::Specification.new do |s|
     "ncurses_wrap.c",
     "ncurses_wrap.h",
     "lib/ncursesw.rb",
+    "lib/ncurses_sugar.rb",
     "panel_wrap.c",
     "panel_wrap.h",
     "menu_wrap.c",

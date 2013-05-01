@@ -1,4 +1,4 @@
-$Id: README,v 1.16 2009/05/03 14:13:27 t-peters Exp $
+$Id: README,v 1.16 2009-05-03 14:13:27 t-peters Exp $
 ------------------------------------------------------------------------
 This directory contains a ruby module for accessing the FSF's ncurses
 library.

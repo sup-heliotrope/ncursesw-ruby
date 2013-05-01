@@ -22,10 +22,12 @@
  *  License along with this module; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
+ * Changes
+ * (C) 2011 Tobias Herzke
  */
 
 
-#ifdef HAVE_FORM_H
+#if defined(HAVE_FORM_H) || defined(HAVE_NCURSESW_FORM_H)
 
 #include "form_wrap.h"
 #include "ncurses_wrap.h"
@@ -1128,9 +1130,9 @@ static void* make_arg(va_list* ap) {
 	 if (args != Qnil) {		
 		if (NUM2INT(argc)-1 != rbncurs_array_length(args)) {	
 		  char msg[500];
-		  snprintf(msg, 500, "The validation functions for this field type need %d additional arguments.",NUM2INT(argc)-1);
+		  snprintf(msg, 500, "The validation functions for this field type need %d additional arguments.",(int)(NUM2INT(argc)-1));
 		  msg[499]=0;
-		  rb_raise(rb_eArgError, msg);	
+		  rb_raise(rb_eArgError, "%s", msg);
 		}
 	 } 
   }

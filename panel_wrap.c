@@ -1,6 +1,7 @@
 /*
  * ncurses-ruby is a ruby module for accessing the FSF's ncurses library
  * (C) 2002 Tobias Peters <t-peters@berlios.de>
+ * (C) 2011 Tobias Herzke
  * 
  *  This module is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -17,9 +18,9 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 
-/* $Id: panel_wrap.c,v 1.2 2004/07/31 08:35:13 t-peters Exp $ */
+/* $Id: panel_wrap.c,v 1.3 2011-05-30 23:05:50 t-peters Exp $ */
 
-#ifdef HAVE_PANEL_H
+#if defined(HAVE_PANEL_H) || defined(HAVE_NCURSESW_PANEL_H)
 
 #include "panel_wrap.h"
 #include "ncurses_wrap.h"

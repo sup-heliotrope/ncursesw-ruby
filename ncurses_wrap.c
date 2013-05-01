@@ -2,7 +2,7 @@
  * ncurses-ruby is a ruby module for accessing the FSF's ncurses library
  * (C) 2002, 2003, 2004 Tobias Peters <t-peters@berlios.de>
  * (C) 2004 Simon Kaczor <skaczor@cox.net>
- * (C) 2005 2006 2009 Tobias Herzke
+ * (C) 2005 2006 2009 2011 Tobias Herzke
  *
  *  This module is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,7 @@
  *  License along with this module; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * $Id: ncurses_wrap.c,v 1.18 2009/07/31 10:49:24 t-peters Exp $
+ * $Id: ncurses_wrap.c,v 1.19 2011-05-30 23:05:50 t-peters Exp $
  *
  * This file was adapted from the original ncurses header file which
  * has the following copyright statements:
@@ -336,15 +336,15 @@ static VALUE rbncurs_winnstr(VALUE dummy, VALUE rb_win, VALUE rb_chstr, VALUE rb
     return INT2NUM(return_value);
 }
 
-#ifdef HAVE_PANEL_H
+#if defined(HAVE_PANEL_H) || defined(HAVE_NCURSESW_PANEL_H)
 #include "panel_wrap.h" /* needs access to mNcurses, wrap_window, get_window */
 #endif
 
-#ifdef HAVE_FORM_H
+#if defined(HAVE_FORM_H) || defined(HAVE_NCURSESW_FORM_H)
 #include "form_wrap.h" /* needs init_form */
 #endif
 
-#ifdef HAVE_MENU_H
+#if defined(HAVE_MENU_H) || defined(HAVE_NCURSESW_MENU_H)
 #include "menu_wrap.h" /* needs init_menu */
 #endif
 
@@ -815,7 +815,7 @@ static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
     int halfdelay = NUM2INT(rb_iv_get(mNcurses, "@halfdelay"));
     int infd = NUM2INT(rb_iv_get(mNcurses, "@infd"));
     double screen_delay = halfdelay * 0.1;
-#if defined(NCURSES_VERSION) && defined(NCURSES_OPAQUE) && !NCURSES_OPAQUE
+#ifdef NCURSES_VERSION
     int windelay = c_win->_delay;
 #else
     int windelay = 0;
@@ -832,26 +832,34 @@ static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
     gettimeofday(&tv, &tz);
     starttime = tv.tv_sec + tv.tv_usec * 1e-6;
     finishtime = starttime + delay;
-#if defined(NCURSES_VERSION) && defined(NCURSES_OPAQUE) && !NCURSES_OPAQUE
+#ifdef NCURSES_VERSION
     c_win->_delay = 0;
 #endif
     while (doupdate() /* detects resize */, (result = wgetch(c_win)) == ERR) {
-        gettimeofday(&tv, &tz);
-        nowtime = tv.tv_sec + tv.tv_usec * 1e-6;
-        delay = finishtime - nowtime;
-	if (delay <= 0) break;
+      rb_fdset_t fdsets[3];
+      rb_fdset_t *rfds = NULL;
+      gettimeofday(&tv, &tz);
+      nowtime = tv.tv_sec + tv.tv_usec * 1e-6;
+      delay = finishtime - nowtime;
+      if (delay <= 0) break;
 
-	/* Check for terminal size change every resize_delay seconds */
-        if (resize_delay > delay) resize_delay = delay;
-        tv.tv_sec = (time_t)resize_delay;
-        tv.tv_usec = (unsigned)( (resize_delay - tv.tv_sec) * 1e6 );
+      /* Check for terminal size change every resize_delay seconds */
+      if (resize_delay > delay) resize_delay = delay;
+      tv.tv_sec = (time_t)resize_delay;
+      tv.tv_usec = (unsigned)( (resize_delay - tv.tv_sec) * 1e6 );
 
-	/* sleep on infd until input is available or tv reaches timeout */
-	FD_ZERO(&in_fds);
-	FD_SET(infd, &in_fds);
-	rb_thread_select(infd + 1, &in_fds, NULL, NULL, &tv);
+      /* sleep on infd until input is available or tv reaches timeout */
+      FD_ZERO(&in_fds);
+      FD_SET(infd, &in_fds);
+      //rb_thread_fd_select(infd + 1, &in_fds, NULL, NULL, &tv);
+
+      rfds = &fdsets[0];
+      rb_fd_init(rfds);
+      rb_fd_copy(rfds, &in_fds, infd +1);
+
+      rb_thread_fd_select(infd + 1, rfds, NULL, NULL, &tv);
     }
-#if defined(NCURSES_VERSION) && defined(NCURSES_OPAQUE) && !NCURSES_OPAQUE
+#ifdef NCURSES_VERSION
     c_win->_delay = windelay;
 #endif
     return result;
@@ -2349,7 +2357,8 @@ static VALUE rbncurs_getparyx(VALUE dummy, VALUE rb_win, VALUE rb_y, VALUE rb_x)
 }
 static VALUE rbncurs_getsyx(VALUE dummy, VALUE rb_y, VALUE rb_x)
 {
-    int y,x;
+    int y = 0;
+    int x = 0;
     if ((rb_obj_is_instance_of(rb_y, rb_cArray) != Qtrue)
         || (rb_obj_is_instance_of(rb_x, rb_cArray) != Qtrue)) {
         rb_raise(rb_eArgError,
@@ -2727,8 +2736,6 @@ static void init_safe_functions(void)
 }
 void Init_ncursesw_bin(void)
 {
-    setlocale(LC_ALL, "");
-
     mNcurses = rb_define_module("Ncurses");
     eNcurses = rb_define_class_under(mNcurses, "Exception", rb_eRuntimeError);
     rb_iv_set(mNcurses, "@windows_hash", rb_hash_new());
@@ -2759,13 +2766,13 @@ static void Init_ncurses_full(void)
     init_functions_3();
 
     init_SCREEN_methods();
-#ifdef HAVE_PANEL_H
+#if defined(HAVE_PANEL_H) || defined(HAVE_NCURSESW_PANEL_H)
     init_panel();
 #endif
-#ifdef HAVE_FORM_H
+#if defined(HAVE_FORM_H) || defined(HAVE_NCURSESW_FORM_H)
     init_form();
 #endif
-#ifdef HAVE_MENU_H
+#if defined(HAVE_MENU_H) || defined(HAVE_NCURSESW_MENU_H)
     init_menu();
 #endif
 }

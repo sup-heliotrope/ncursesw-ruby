@@ -7,7 +7,7 @@
 # No warranties
 # Share and enjoy!
 
-require "ncurses"
+require "ncursesw"
 
 # read_line returns an array
 # [string, last_cursor_position_in_string, keycode_of_terminating_enter_key].
