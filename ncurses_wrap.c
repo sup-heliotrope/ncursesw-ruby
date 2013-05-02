@@ -836,8 +836,10 @@ static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
     c_win->_delay = 0;
 #endif
     while (doupdate() /* detects resize */, (result = wgetch(c_win)) == ERR) {
+#ifdef HAVE_RB_THREAD_FD_SELECT
       rb_fdset_t fdsets[3];
       rb_fdset_t *rfds = NULL;
+#endif
       gettimeofday(&tv, &tz);
       nowtime = tv.tv_sec + tv.tv_usec * 1e-6;
       delay = finishtime - nowtime;
@@ -851,13 +853,16 @@ static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
       /* sleep on infd until input is available or tv reaches timeout */
       FD_ZERO(&in_fds);
       FD_SET(infd, &in_fds);
-      //rb_thread_fd_select(infd + 1, &in_fds, NULL, NULL, &tv);
 
+#ifdef HAVE_RB_THREAD_FD_SELECT
       rfds = &fdsets[0];
       rb_fd_init(rfds);
       rb_fd_copy(rfds, &in_fds, infd +1);
 
       rb_thread_fd_select(infd + 1, rfds, NULL, NULL, &tv);
+#else
+      rb_thread_select(infd + 1, &in_fds, NULL, NULL, &tv);
+#endif
     }
 #ifdef NCURSES_VERSION
     c_win->_delay = windelay;

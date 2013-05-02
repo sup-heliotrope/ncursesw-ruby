@@ -23,7 +23,6 @@
 require "mkmf"
 
 $CFLAGS  += " -g -Wformat -Werror=format-security"
-$CXXFLAGS  = $CFLAGS
 
 have_header("unistd.h")
 have_header("locale.h")
@@ -134,4 +133,11 @@ if have_header("menu.h")
   have_library("menu", "new_menu")
 end
 
+if (have_func ("rb_thread_fd_select"))
+  $CFLAGS  += " -DHAVE_RB_THREAD_FD_SELECT"
+end
+
+$CXXFLAGS  = $CFLAGS
+
 create_makefile('ncursesw_bin')
+
