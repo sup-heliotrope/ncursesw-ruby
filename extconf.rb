@@ -137,6 +137,8 @@ if (have_func ("rb_thread_fd_select"))
   $CFLAGS  += " -DHAVE_RB_THREAD_FD_SELECT"
 end
 
+# add NCURSES_OPAQUE for mac
+$CFLAGS += " -DNCURSES_OPAQUE=0"
 $CXXFLAGS  = $CFLAGS
 
 create_makefile('ncursesw_bin')
