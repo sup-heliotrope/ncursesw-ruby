@@ -808,7 +808,7 @@ static VALUE rbncurs_m_item_visible(VALUE dummy, VALUE rb_item)
 static VALUE rbncurs_c_set_menu_fore(VALUE rb_menu, VALUE attr)
 {
   MENU *menu = get_menu(rb_menu);
-  return INT2NUM(set_menu_fore(menu, NUM2ULONG(attr)));
+  return INT2NUM(set_menu_fore(menu, (int) NUM2ULONG(attr)));
 }
 static VALUE rbncurs_m_set_menu_fore(VALUE dummy, VALUE rb_menu, VALUE attr)
 { return rbncurs_c_set_menu_fore(rb_menu, attr); }
@@ -824,7 +824,7 @@ static VALUE rbncurs_m_menu_fore(VALUE dummy, VALUE rb_menu)
 static VALUE rbncurs_c_set_menu_back(VALUE rb_menu, VALUE attr)
 {
   MENU *menu = get_menu(rb_menu);
-  return INT2NUM(set_menu_back(menu, NUM2ULONG(attr)));
+  return INT2NUM(set_menu_back(menu, (int) NUM2ULONG(attr)));
 }
 static VALUE rbncurs_m_set_menu_back(VALUE dummy, VALUE rb_menu, VALUE attr)
 { return rbncurs_c_set_menu_back(rb_menu, attr); }
@@ -840,7 +840,7 @@ static VALUE rbncurs_m_menu_back(VALUE dummy, VALUE rb_menu)
 static VALUE rbncurs_c_set_menu_grey(VALUE rb_menu, VALUE attr)
 {
   MENU *menu = get_menu(rb_menu);
-  return INT2NUM(set_menu_grey(menu, NUM2ULONG(attr)));
+  return INT2NUM(set_menu_grey(menu, (int) NUM2ULONG(attr)));
 }
 static VALUE rbncurs_m_set_menu_grey(VALUE dummy, VALUE rb_menu, VALUE attr)
 { return rbncurs_c_set_menu_grey(rb_menu, attr); }
