@@ -137,6 +137,10 @@ if (have_func ("rb_thread_fd_select"))
   $CFLAGS  += " -DHAVE_RB_THREAD_FD_SELECT"
 end
 
+if (have_func ("clock_gettime"))
+  $CFLAGS += " -DHAVE_CLOCK_GETTIME"
+end
+
 $CXXFLAGS  = $CFLAGS
 
 create_makefile('ncursesw_bin')

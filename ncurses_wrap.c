@@ -70,6 +70,10 @@
 #include <locale.h>
 #endif
 
+#ifdef HAVE_CLOCK_GETTIME
+#include <time.h>
+#endif
+
 VALUE mNcurses;  /* module Ncurses */
 VALUE cWINDOW;   /* class Ncurses::WINDOW */
 VALUE cSCREEN;   /* class Ncurses::SCREEN */
@@ -824,13 +828,20 @@ static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
     /* FIXME:                                                  ^ Infinity ^*/
     double delay = (screen_delay > 0) ? screen_delay : window_delay;
     int result;
-    struct timeval tv;
-    struct timezone tz = {0,0};
     double starttime, nowtime, finishtime;
     double resize_delay = NUM2INT(get_RESIZEDELAY()) / 1000.0;
     fd_set in_fds;
+#ifdef HAVE_CLOCK_GETTIME
+    struct timespec tv;
+    struct timeval  ts;
+    clock_gettime (CLOCK_MONOTONIC, &tv);
+    starttime = tv.tv_sec + tv.tv_nsec * 1e-9;
+#else
+    struct timeval tv;
+    struct timezone tz = {0,0};
     gettimeofday(&tv, &tz);
     starttime = tv.tv_sec + tv.tv_usec * 1e-6;
+#endif
     finishtime = starttime + delay;
 #ifdef NCURSES_VERSION
     c_win->_delay = 0;
@@ -840,15 +851,29 @@ static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
       rb_fdset_t fdsets[3];
       rb_fdset_t *rfds = NULL;
 #endif
+#ifdef HAVE_CLOCK_GETTIME
+      clock_gettime (CLOCK_MONOTONIC, &tv);
+      nowtime = tv.tv_sec + tv.tv_nsec * 1e-9;
+#else
       gettimeofday(&tv, &tz);
       nowtime = tv.tv_sec + tv.tv_usec * 1e-6;
+#endif
       delay = finishtime - nowtime;
       if (delay <= 0) break;
 
       /* Check for terminal size change every resize_delay seconds */
       if (resize_delay > delay) resize_delay = delay;
       tv.tv_sec = (time_t)resize_delay;
+#ifdef HAVE_CLOCK_GETTIME
+      tv.tv_nsec = (unsigned)( (resize_delay - tv.tv_sec) * 1e9 );
+#else
       tv.tv_usec = (unsigned)( (resize_delay - tv.tv_sec) * 1e6 );
+#endif
+
+#if HAVE_CLOCK_GETTIME
+      ts.tv_sec = tv.tv_sec;
+      ts.tv_usec = tv.tv_nsec * 1e-3;
+#endif
 
       /* sleep on infd until input is available or tv reaches timeout */
       FD_ZERO(&in_fds);
@@ -859,9 +884,18 @@ static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
       rb_fd_init(rfds);
       rb_fd_copy(rfds, &in_fds, infd +1);
 
+#if HAVE_CLOCK_GETTIME
+      rb_thread_fd_select(infd + 1, rfds, NULL, NULL, &ts);
+#else
       rb_thread_fd_select(infd + 1, rfds, NULL, NULL, &tv);
+#endif
+
+#else
+#if HAVE_CLOCK_GETTIME
+      rb_thread_select(infd + 1, &in_fds, NULL, NULL, &ts);
 #else
       rb_thread_select(infd + 1, &in_fds, NULL, NULL, &tv);
+#endif
 #endif
     }
 #ifdef NCURSES_VERSION
