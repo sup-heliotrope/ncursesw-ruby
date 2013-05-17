@@ -139,6 +139,11 @@ end
 
 # add NCURSES_OPAQUE for mac
 $CFLAGS += " -DNCURSES_OPAQUE=0"
+
+if (have_func ("clock_gettime"))
+  $CFLAGS += " -DHAVE_CLOCK_GETTIME"
+end
+
 $CXXFLAGS  = $CFLAGS
 
 create_makefile('ncursesw_bin')
