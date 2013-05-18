@@ -621,7 +621,7 @@ static VALUE rbncurs_c_set_field_type(int argc, VALUE* argv, VALUE rb_field) {
 		rb_raise(rb_eArgError, "TYPE_ENUM requires three additional arguments");
 	 }
     else {
-		int n = rbncurs_array_length(arg3);
+		int n = (int) rbncurs_array_length(arg3);
 		/*  Will ncurses free this array of strings in free_field()? */
 		char** list = ALLOC_N(char*, n+1);
 		int i;
@@ -698,7 +698,7 @@ static VALUE rbncurs_m_field_arg(VALUE dummy, VALUE rb_field)
  */
 static VALUE rbncurs_c_set_field_fore(VALUE rb_field, VALUE attr) {
   FIELD* field = get_field(rb_field);
-  return INT2NUM(set_field_fore(field, NUM2ULONG(attr)));
+  return INT2NUM(set_field_fore(field, (int) NUM2ULONG(attr)));
 }
 static VALUE rbncurs_m_set_field_fore(VALUE dummy, VALUE rb_field, VALUE attr)
 { return rbncurs_c_set_field_fore(rb_field, attr); }
@@ -712,7 +712,7 @@ static VALUE rbncurs_m_field_fore(VALUE dummy, VALUE rb_field)
 
 static VALUE rbncurs_c_set_field_back(VALUE rb_field, VALUE attr) {
   FIELD* field = get_field(rb_field);
-  return INT2NUM(set_field_back(field, NUM2ULONG(attr)));
+  return INT2NUM(set_field_back(field, (int) NUM2ULONG(attr)));
 }
 static VALUE rbncurs_m_set_field_back(VALUE dummy, VALUE rb_field, VALUE attr)
 { return rbncurs_c_set_field_back(rb_field, attr); }
