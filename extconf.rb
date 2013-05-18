@@ -133,14 +133,14 @@ if have_header("menu.h")
   have_library("menu", "new_menu")
 end
 
-if (have_func ("rb_thread_fd_select"))
+if have_func("rb_thread_fd_select")
   $CFLAGS  += " -DHAVE_RB_THREAD_FD_SELECT"
 end
 
 # add NCURSES_OPAQUE for mac
 $CFLAGS += " -DNCURSES_OPAQUE=0"
 
-if (have_func ("clock_gettime"))
+if have_func("clock_gettime")
   $CFLAGS += " -DHAVE_CLOCK_GETTIME"
 end
 
