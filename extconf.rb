@@ -27,6 +27,9 @@ $CFLAGS  += " -g -Wformat -Werror=format-security"
 have_header("unistd.h")
 have_header("locale.h")
 
+# make sure we are using the correct header (necessary on mac)
+dir_config ('ncurses')
+
 if have_header("ncurses.h")
   curses_header = "ncurses.h"
 elsif have_header("ncurses/curses.h")
@@ -136,9 +139,6 @@ end
 if have_func("rb_thread_fd_select")
   $CFLAGS  += " -DHAVE_RB_THREAD_FD_SELECT"
 end
-
-# add NCURSES_OPAQUE for mac
-$CFLAGS += " -DNCURSES_OPAQUE=0"
 
 if have_func("clock_gettime")
   $CFLAGS += " -DHAVE_CLOCK_GETTIME"
