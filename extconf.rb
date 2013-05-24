@@ -123,16 +123,25 @@ have_func("attr_get")
 puts "checking for the panel library..."
 if have_header("panel.h")
   have_library("panelw", "panel_hidden")
+else
+  raise "panel library not found"
 end
+
 puts "checking for the form library..."
 if have_header("form.h")
   have_library("formw", "new_form")
+else
+  raise "form library not found."
 end
+
 puts "checking for the menu library..."
 if have_header("menu.h")
   have_library("menu", "new_menu")
+else
+  raise "menu library not found."
 end
 
+puts "checking for various ruby and libc functions.."
 if have_func("rb_thread_fd_select")
   $CFLAGS  += " -DHAVE_RB_THREAD_FD_SELECT"
 end
