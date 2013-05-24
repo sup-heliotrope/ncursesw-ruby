@@ -141,7 +141,7 @@ else
   raise "menu library not found."
 end
 
-puts "checking for various ruby and libc functions.."
+puts "checking for various ruby and standard functions.."
 if have_func("rb_thread_fd_select")
   $CFLAGS  += " -DHAVE_RB_THREAD_FD_SELECT"
 end
