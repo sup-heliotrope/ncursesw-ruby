@@ -146,8 +146,13 @@ if have_func("rb_thread_fd_select")
   $CFLAGS  += " -DHAVE_RB_THREAD_FD_SELECT"
 end
 
-# add NCURSES_OPAQUE for mac
-$CFLAGS += " -DNCURSES_OPAQUE=0"
+# Avoid dereferencing WINDOW pointers on FreeBSD
+if RUBY_PLATFORM =~ /freebsd/
+  $CFLAGS += " -DNCURSES_OPAQUE=1"
+else
+  # add NCURSES_OPAQUE for mac
+  $CFLAGS += " -DNCURSES_OPAQUE=0"
+end
 
 if have_func("clock_gettime")
   $CFLAGS += " -DHAVE_CLOCK_GETTIME"
