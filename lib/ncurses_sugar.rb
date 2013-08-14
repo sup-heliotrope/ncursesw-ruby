@@ -1,3 +1,4 @@
+# encoding: utf-8
 # ncurses-ruby is a ruby module for accessing the FSF's ncurses library
 # (C) 2002, 2003, 2004 Tobias Peters <t-peters@users.berlios.de>
 # (C) 2004 Simon Kaczor <skaczor@cox.net>
@@ -23,25 +24,25 @@
 def Ncurses._XOPEN_CURSES
   Ncurses::XOPEN_CURSES
 end
-def Ncurses._SUBWIN  
+def Ncurses._SUBWIN
   Ncurses::SUBWIN
 end
-def Ncurses._ENDLINE 
+def Ncurses._ENDLINE
   Ncurses::ENDLINE
 end
-def Ncurses._FULLWIN 
+def Ncurses._FULLWIN
   Ncurses::FULLWIN
 end
 def Ncurses._SCROLLWIN
   Ncurses::SCROLLWIN
 end
-def Ncurses._ISPAD   
+def Ncurses._ISPAD
   Ncurses::ISPAD
 end
 def Ncurses._HASMOVED
   Ncurses::HASMOVED
 end
-def Ncurses._WRAPPED 
+def Ncurses._WRAPPED
   Ncurses::WRAPPED
 end
 def Ncurses._NOCHANGE
@@ -98,7 +99,7 @@ module Ncurses
   end
   GETSTR_LIMIT = 1024
 
-  module Panel 
+  module Panel
     class PANEL; end
   end
 
@@ -111,7 +112,7 @@ module Ncurses
         @user_object = obj
       end
     end
-    
+
     class FIELD
       attr_reader :user_object
 
@@ -134,7 +135,7 @@ module Ncurses
         @user_object = obj
       end
     end
-    
+
     class ITEM
       attr_reader :user_object
 
@@ -158,7 +159,7 @@ def Ncurses.mvinchstr(y,x, str)
   Ncurses.mvwinchstr(Ncurses.stdscr, y,x, str)
 end
 def Ncurses.mvwinchnstr(win, y,x, str, n)
-  if (Ncurses.wmove(win,y,x) == Ncurses::ERR) 
+  if (Ncurses.wmove(win,y,x) == Ncurses::ERR)
     Ncurses::ERR
   else
     Ncurses.winchnstr(win,str,n)
@@ -182,7 +183,7 @@ def Ncurses.mvgetnstr(y,x, str, n)
   Ncurses.mvwgetnstr(Ncurses.stdscr, y,x, str, n)
 end
 def Ncurses.mvwgetnstr(win, y,x, str, n)
-  if (Ncurses.wmove(win,y,x) == Ncurses::ERR) 
+  if (Ncurses.wmove(win,y,x) == Ncurses::ERR)
     Ncurses::ERR
   else
     Ncurses.wgetnstr(win,str,n)
@@ -202,7 +203,7 @@ def Ncurses.mvinstr(y,x, str)
   Ncurses.mvwinstr(Ncurses.stdscr, y,x, str)
 end
 def Ncurses.mvwinnstr(win, y,x, str, n)
-  if (Ncurses.wmove(win,y,x) == Ncurses::ERR) 
+  if (Ncurses.wmove(win,y,x) == Ncurses::ERR)
     Ncurses::ERR
   else
     Ncurses.winnstr(win,str,n)
@@ -270,7 +271,7 @@ def Ncurses.mvscanw(y,x, format, result)
   Ncurses.mvwscanw(Ncurses.stdscr, y,x, format, result)
 end
 def Ncurses.mvwscanw(win, y,x, format, result)
-  if (Ncurses.wmove(win, y,x) == Ncurses::ERR) 
+  if (Ncurses.wmove(win, y,x) == Ncurses::ERR)
     Ncurses::ERR
   else
     Ncurses.wscanw(win, format, result)
@@ -278,7 +279,7 @@ def Ncurses.mvwscanw(win, y,x, format, result)
 end
 def Ncurses.wscanw(win, format, result)
   str = ""
-  if (Ncurses.wgetstr(win, str) == Ncurses::ERR) 
+  if (Ncurses.wgetstr(win, str) == Ncurses::ERR)
     Ncurses::ERR
   else
     require "scanf.rb" # Use ruby's implementation of scanf
@@ -290,7 +291,7 @@ def Ncurses.mvprintw(*args)
   Ncurses.mvwprintw(Ncurses.stdscr, *args)
 end
 def Ncurses.mvwprintw(win, y,x, *args)
-  if (Ncurses.wmove(win,y,x) == Ncurses::ERR) 
+  if (Ncurses.wmove(win,y,x) == Ncurses::ERR)
     Ncurses::ERR
   else
     wprintw(win, *args)
@@ -317,7 +318,7 @@ module Ncurses
       unless target.ancestors.member?(Ncurses)
         target.__send__(:include, Ncurses)
       end
-      
+
       # make methods available
       unless target.respond_to?(:pre_Ncurses_method_missing)
         target.module_eval{

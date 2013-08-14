@@ -1,3 +1,4 @@
+# encoding: utf-8
 # ncurses-ruby is a ruby module for accessing the FSF's ncurses library
 # (C) 2002, 2003, 2004 Tobias Peters <t-peters@users.berlios.de>
 # (C) 2004 Simon Kaczor <skaczor@cox.net>
