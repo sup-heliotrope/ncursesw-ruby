@@ -850,7 +850,7 @@ static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_f
 #if defined(NCURSES_VERSION) && defined(NCURSES_OPAQUE) && !NCURSES_OPAQUE
     c_win->_delay = 0;
 #endif
-    while (doupdate() /* detects resize */, (result = wgetch(c_win)) == ERR) {
+    while (doupdate() /* detects resize */, (result = _wgetch_func(c_win)) == ERR) {
 #ifdef HAVE_RB_THREAD_FD_SELECT
       rb_fdset_t fdsets[3];
       rb_fdset_t *rfds = NULL;
@@ -914,8 +914,14 @@ static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
 }
 
 /* wide char getch */
+static wint_t wget_wch_back;
+static int my_wget_wch (WINDOW *c_win) {
+  return wget_wch (c_win, &wget_wch_back);
+}
+
 static int rbncurshelper_nonblocking_wget_wch(WINDOW *c_win) {
-  return rbncurshelper_do_wgetch_functor (c_win, &wgetch);
+  rbncurshelper_do_wgetch_functor (c_win, &my_wget_wch);
+  return wget_wch_back;
 }
 
 static VALUE rbncurs_getch(VALUE dummy) {
@@ -923,7 +929,7 @@ static VALUE rbncurs_getch(VALUE dummy) {
 }
 
 static VALUE rbncurs_get_wch(VALUE dummy) {
-    return INT2NUM(rbncurshelper_nonblocking_wget_wch(stdscr));
+    return LONG2NUM(rbncurshelper_nonblocking_wget_wch(stdscr));
 }
 
 static VALUE rbncurs_halfdelay(VALUE dummy, VALUE arg1) {
@@ -1566,6 +1572,9 @@ static VALUE rbncurs_werase(VALUE dummy, VALUE arg1) {
 static VALUE rbncurs_wgetch(VALUE dummy, VALUE arg1) {
     return INT2NUM(rbncurshelper_nonblocking_wgetch(get_window(arg1)));
 }
+static VALUE rbncurs_wget_wch(VALUE dummy, VALUE arg1) {
+    return INT2NUM(rbncurshelper_nonblocking_wget_wch(get_window(arg1)));
+}
 static VALUE rbncurs_whline(VALUE dummy, VALUE arg1, VALUE arg2, VALUE arg3) {
     return INT2NUM(whline(get_window(arg1),  (int) NUM2ULONG(arg2),  NUM2INT(arg3)));
 }
@@ -1791,6 +1800,7 @@ static void init_functions_2(void) {
     NCFUNC(getbkgd, 1);
     NCFUNC(getch, 0);
     NCFUNC(get_wch, 0);
+    NCFUNC(wget_wch, 1);
     NCFUNC(halfdelay, 1);
     rb_define_module_function(mNcurses, "has_colors?",
                               (&rbncurs_has_colors),
