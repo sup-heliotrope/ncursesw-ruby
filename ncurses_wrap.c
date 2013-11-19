@@ -913,15 +913,21 @@ static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
   return rbncurshelper_do_wgetch_functor (c_win, &wgetch);
 }
 
-/* wide char getch */
+/* not thread safe: wide char getch */
 static wint_t wget_wch_back;
 static int my_wget_wch (WINDOW *c_win) {
   return wget_wch (c_win, &wget_wch_back);
 }
 
-static int rbncurshelper_nonblocking_wget_wch(WINDOW *c_win) {
-  rbncurshelper_do_wgetch_functor (c_win, &my_wget_wch);
-  return wget_wch_back;
+/* return array with first element being return key code status,
+ * and second element the key code */
+static VALUE rbncurshelper_nonblocking_wget_wch(WINDOW *c_win) {
+  int retcode = rbncurshelper_do_wgetch_functor (c_win, &my_wget_wch);
+  //char c_str[2];
+  //c_str[0] = wget_wch_back;
+  //c_str[1] = 0;
+  VALUE r = rb_assoc_new (INT2NUM(retcode), rb_str_new((const char*)&wget_wch_back, 1));
+  return r;
 }
 
 static VALUE rbncurs_getch(VALUE dummy) {
@@ -929,7 +935,7 @@ static VALUE rbncurs_getch(VALUE dummy) {
 }
 
 static VALUE rbncurs_get_wch(VALUE dummy) {
-    return LONG2NUM(rbncurshelper_nonblocking_wget_wch(stdscr));
+    return rbncurshelper_nonblocking_wget_wch(stdscr);
 }
 
 static VALUE rbncurs_halfdelay(VALUE dummy, VALUE arg1) {
@@ -1572,9 +1578,11 @@ static VALUE rbncurs_werase(VALUE dummy, VALUE arg1) {
 static VALUE rbncurs_wgetch(VALUE dummy, VALUE arg1) {
     return INT2NUM(rbncurshelper_nonblocking_wgetch(get_window(arg1)));
 }
+
 static VALUE rbncurs_wget_wch(VALUE dummy, VALUE arg1) {
-    return INT2NUM(rbncurshelper_nonblocking_wget_wch(get_window(arg1)));
+    return rbncurshelper_nonblocking_wget_wch(get_window(arg1));
 }
+
 static VALUE rbncurs_whline(VALUE dummy, VALUE arg1, VALUE arg2, VALUE arg3) {
     return INT2NUM(whline(get_window(arg1),  (int) NUM2ULONG(arg2),  NUM2INT(arg3)));
 }

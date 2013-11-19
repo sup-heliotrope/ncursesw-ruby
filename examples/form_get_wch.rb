@@ -41,7 +41,13 @@ begin
   scr.refresh()
 
   # Loop through to get user requests
-  while((ch = Ncurses.get_wch()) != Ncurses::KEY_F1) do
+  while(true) do
+    ret = Ncurses.get_wch()
+
+    #ret[1].force_encoding('utf-8')
+    #puts "got: #{ret.inspect}"
+
+    ch = ret[1]
     case(ch)
     when Ncurses::KEY_DOWN
       # Go to next field
@@ -56,7 +62,7 @@ begin
       Ncurses::Form.form_driver(form, Ncurses::Form::REQ_END_LINE);
     else                                                                   
       # If this is a normal character, it gets Printed
-      Ncurses::Form.form_driver(form, ch)
+      Ncurses::Form.form_driver(form, ch.ord)
     end
   end
     
