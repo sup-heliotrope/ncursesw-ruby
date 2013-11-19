@@ -432,17 +432,17 @@ init_globals_2(void)
     rb_iv_set(mNcurses, "@curscr", Qnil);
     rb_iv_set(mNcurses, "@newscr", Qnil);
 
-    rb_define_module_function(mNcurses, "stdscr", 
+    rb_define_module_function(mNcurses, "stdscr",
                               (&get_stdscr), 0);
-    rb_define_module_function(mNcurses, "curscr", 
+    rb_define_module_function(mNcurses, "curscr",
                               (&get_curscr), 0);
 #ifdef HAVE_NEWSCR
-    rb_define_module_function(mNcurses, "newscr", 
+    rb_define_module_function(mNcurses, "newscr",
                               (&get_newscr), 0);
 #endif
-    rb_define_module_function(mNcurses, "LINES",  
+    rb_define_module_function(mNcurses, "LINES",
                               (&get_LINES),  0);
-    rb_define_module_function(mNcurses, "COLS",   
+    rb_define_module_function(mNcurses, "COLS",
                               (&get_COLS),   0);
 #ifdef HAVE_TABSIZE
     rb_define_module_function(mNcurses, "TABSIZE",
@@ -935,7 +935,7 @@ static VALUE rbncurs_inch(VALUE dummy) {
 }
 static VALUE rbncurs_initscr(VALUE dummy) {
     VALUE v = wrap_window(initscr());
-    if (!RTEST(v)) 
+    if (!RTEST(v))
         return v;
 
     Init_ncurses_full();
@@ -2651,7 +2651,7 @@ VALUE rb_## ACS (VALUE rb_screen)                 \
     VALUE rb_ACS_CONST = INT2NUM(ACS);            \
     rbncurs_set_term(mNcurses, current_screen);   \
     return  rb_ACS_CONST;                         \
-}             
+}
 #define wrap_ACS(ACS)                                          \
 rb_define_method(cSCREEN, #ACS,                                \
                  (&rb_ ## ACS),     \
