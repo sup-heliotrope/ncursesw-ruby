@@ -814,7 +814,11 @@ static VALUE rbncurs_getbkgd(VALUE dummy, VALUE arg1) {
     return INT2NUM(getbkgd(get_window(arg1)));
 }
 
-static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
+/* typedef of a pointer to a wgetch function */
+typedef int (*wgetch_func) (WINDOW *);
+
+/* functor for getting a char nonblocking, pass getchar function */
+static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_func) {
     /* nonblocking wgetch only implemented for Ncurses */
     int halfdelay = NUM2INT(rb_iv_get(mNcurses, "@halfdelay"));
     int infd = NUM2INT(rb_iv_get(mNcurses, "@infd"));
@@ -903,9 +907,25 @@ static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
 #endif
     return result;
 }
+
+/* non-wide char getch */
+static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
+  return rbncurshelper_do_wgetch_functor (c_win, &wgetch);
+}
+
+/* wide char getch */
+static int rbncurshelper_nonblocking_wget_wch(WINDOW *c_win) {
+  return rbncurshelper_do_wgetch_functor (c_win, &wgetch);
+}
+
 static VALUE rbncurs_getch(VALUE dummy) {
     return INT2NUM(rbncurshelper_nonblocking_wgetch(stdscr));
 }
+
+static VALUE rbncurs_get_wch(VALUE dummy) {
+    return INT2NUM(rbncurshelper_nonblocking_wget_wch(stdscr));
+}
+
 static VALUE rbncurs_halfdelay(VALUE dummy, VALUE arg1) {
     return INT2NUM(rbncurshelper_halfdelay_cbreak(NUM2INT(arg1), 1));
 }
@@ -1770,6 +1790,7 @@ static void init_functions_2(void) {
     NCFUNC(flushinp, 0);
     NCFUNC(getbkgd, 1);
     NCFUNC(getch, 0);
+    NCFUNC(get_wch, 0);
     NCFUNC(halfdelay, 1);
     rb_define_module_function(mNcurses, "has_colors?",
                               (&rbncurs_has_colors),

@@ -105,6 +105,11 @@ have_func("wchgat")
 have_func("wcolor_set")
 have_func("getattrs")
 
+puts "checking for ncursesw (wide char) functions..."
+if not have_func("get_wch")
+  raise "no get_wch found."
+end
+
 puts "checking which debugging functions to wrap..."
 have_func("_tracef")
 have_func("_tracedump")
