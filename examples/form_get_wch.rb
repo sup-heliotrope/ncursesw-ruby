@@ -62,7 +62,7 @@ begin
       Ncurses::Form.form_driver(form, Ncurses::Form::REQ_END_LINE);
     else                                                                   
       # If this is a normal character, it gets Printed
-      Ncurses::Form.form_driver(form, ch.ord)
+      Ncurses::Form.form_driver(form, ch)
     end
   end
     

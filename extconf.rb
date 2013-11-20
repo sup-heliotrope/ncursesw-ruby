@@ -134,7 +134,9 @@ end
 
 puts "checking for the form library..."
 if have_header("form.h")
-  have_library("formw", "new_form")
+  if not have_library("formw", "new_form")
+    raise "formw library not found"
+  end
 else
   raise "form library not found."
 end

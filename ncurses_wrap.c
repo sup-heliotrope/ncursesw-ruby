@@ -923,10 +923,7 @@ static int my_wget_wch (WINDOW *c_win) {
  * and second element the key code */
 static VALUE rbncurshelper_nonblocking_wget_wch(WINDOW *c_win) {
   int retcode = rbncurshelper_do_wgetch_functor (c_win, &my_wget_wch);
-  //char c_str[2];
-  //c_str[0] = wget_wch_back;
-  //c_str[1] = 0;
-  VALUE r = rb_assoc_new (INT2NUM(retcode), rb_str_new((const char*)&wget_wch_back, 1));
+  VALUE r = rb_assoc_new (INT2NUM(retcode), LONG2NUM(wget_wch_back));
   return r;
 }
 
