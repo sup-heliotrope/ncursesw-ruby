@@ -5,9 +5,9 @@
 # For a more rubyish approach that uses Ruby objects see form2.rb
 #
 # The original example contained the following copyright:
-# Copyright (c) 2001 by Pradeep Padala. This document may be distributed 
+# Copyright (c) 2001 by Pradeep Padala. This document may be distributed
 # under the terms set forth in the LDP license at linuxdoc.org/COPYRIGHT.html.
- 
+
 require 'ncursesw.rb'
 
 begin
@@ -20,7 +20,7 @@ begin
   fields = Array.new
   fields.push(Ncurses::Form.new_field(1,10,4,18,0,0))
   fields.push(Ncurses::Form.new_field(1,10,6,18,0,0))
-  
+
   # set field options
   Ncurses::Form.set_field_back(fields[0], Ncurses::A_UNDERLINE)
   Ncurses::Form.field_opts_off(fields[0], Ncurses::Form::O_AUTOSKIP)
@@ -29,7 +29,7 @@ begin
   Ncurses::Form.field_opts_off(fields[1], Ncurses::Form::O_AUTOSKIP)
 
 
-  # create a form  
+  # create a form
   form = Ncurses::Form.new_form(fields)
 
   # post the form and refresh the screen
@@ -44,35 +44,39 @@ begin
   while(true) do
     ret = Ncurses.get_wch()
 
-    #ret[1].force_encoding('utf-8')
-    #puts "got: #{ret.inspect}"
-
     ch = ret[1]
-    case(ch)
-    when Ncurses::KEY_DOWN
-      # Go to next field
-      Ncurses::Form.form_driver(form, Ncurses::Form::REQ_NEXT_FIELD)
-      # Go to the end of the present buffer
-      # Leaves nicely at the last character
-      Ncurses::Form.form_driver(form, Ncurses::Form::REQ_END_LINE)
-      
-    when Ncurses::KEY_UP
-      #Go to previous field
-      Ncurses::Form.form_driver(form, Ncurses::Form::REQ_PREV_FIELD)
-      Ncurses::Form.form_driver(form, Ncurses::Form::REQ_END_LINE);
-    else                                                                   
+
+    Ncurses.mvprintw(8, 10, "Got: #{ch.inspect} (#{[ch].pack("U")})")
+
+    case (ret[0])
+    when 0
       # If this is a normal character, it gets Printed
-      Ncurses::Form.form_driver(form, ch)
+      Ncurses::Form.form_driver(form, [ch].pack("U").ord)
+      fields[0].set_field_buffer(0, [ch].pack("U"))
+    else
+      case(ch)
+      when Ncurses::KEY_DOWN
+        # Go to next field
+        Ncurses::Form.form_driver(form, Ncurses::Form::REQ_NEXT_FIELD)
+        # Go to the end of the present buffer
+        # Leaves nicely at the last character
+        Ncurses::Form.form_driver(form, Ncurses::Form::REQ_END_LINE)
+
+      when Ncurses::KEY_UP
+        #Go to previous field
+        Ncurses::Form.form_driver(form, Ncurses::Form::REQ_PREV_FIELD)
+        Ncurses::Form.form_driver(form, Ncurses::Form::REQ_END_LINE);
+      end
     end
   end
-    
+
   # unpost and free form
   Ncurses::Form.unpost_form(form);
   Ncurses::Form.free_form(form)
   Ncurses::Form.free_field(fields[0]);
   Ncurses::Form.free_field(fields[1]);
 
-  
+
   #using class methods this time
 #  form = Ncurses::Form::FORM.new(fields)
 #  puts "Created form: #{form.inspect}\n"
