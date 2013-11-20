@@ -49,11 +49,13 @@ begin
     Ncurses.mvprintw(8, 10, "Got: #{ch.inspect} (#{[ch].pack("U")})")
 
     case (ret[0])
-    when 0
+    when Ncurses::OK
       # If this is a normal character, it gets Printed
       Ncurses::Form.form_driver(form, [ch].pack("U").ord)
       fields[0].set_field_buffer(0, [ch].pack("U"))
-    else
+      Ncurses.mvprintw(9, 10, "Type: OK           ")
+    when Ncurses::KEY_CODE_YES
+      Ncurses.mvprintw(9, 10, "Type: KEY_CODE_YES")
       case(ch)
       when Ncurses::KEY_DOWN
         # Go to next field
@@ -67,6 +69,8 @@ begin
         Ncurses::Form.form_driver(form, Ncurses::Form::REQ_PREV_FIELD)
         Ncurses::Form.form_driver(form, Ncurses::Form::REQ_END_LINE);
       end
+    else
+      Ncurses.mvprintw(9, 10, "Type: Unknown: #{ret[0].inspect}            ")
     end
   end
 
