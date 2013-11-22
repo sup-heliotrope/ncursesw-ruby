@@ -40,6 +40,8 @@ begin
   Ncurses.mvprintw(6, 10, "Value 2:")
   scr.refresh()
 
+  buf = ""
+
   # Loop through to get user requests
   while(true) do
     ret = Ncurses.get_wch()
@@ -51,9 +53,32 @@ begin
     case (ret[0])
     when Ncurses::OK
       # If this is a normal character, it gets Printed
+      prbuf = fields[0].field_buffer 0
+      #buf = buf.force_encoding('utf-8') + [ch].pack('U')
+      buf = prbuf + [ch].pack('U') 
+
+
+      #buf = sbuf.force_encoding('utf-8') + [ch].pack('U')
+      fields[0].set_field_buffer(0, buf)
+      sbuf = fields[0].field_buffer 0
+      #fields[0].working.add_wch 'a'
+      Ncurses.mvprintw(12, 10, "buf: #{sbuf}")
+      Ncurses.mvprintw(13, 10, "pbuf: #{prbuf}")
+      Ncurses.mvprintw(14, 10, "mbuf: #{buf}")
+
+      #Ncurses.wadd_wch(form.win, ch)
+
+      #buf = fields[0].field_buffer(0)
+      #buf = buf.force_encoding('utf-8') + [ch].pack("U")
+      #fields[0].set_field_buffer(0, buf)
+      #fields[0].set_field_buffer(0, [ch].pack("U"))
+
       Ncurses::Form.form_driver(form, [ch].pack("U").ord)
-      fields[0].set_field_buffer(0, [ch].pack("U"))
-      Ncurses.mvprintw(9, 10, "Type: OK           ")
+      #puts "{fields[0].methods}"
+
+      #puts "#{form.methods}"
+      #puts "#{fields[0].methods}"
+      #Ncurses.mvprintw(9, 10, "Type: OK           ")
     when Ncurses::KEY_CODE_YES
       Ncurses.mvprintw(9, 10, "Type: KEY_CODE_YES")
       case(ch)

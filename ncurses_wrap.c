@@ -572,6 +572,10 @@ static chtype * RB2CHSTR(VALUE array)
 static VALUE rbncurs_addch(VALUE dummy, VALUE arg1) {
     return INT2NUM(addch((int) NUM2ULONG(arg1)));
 }
+static VALUE rbncurs_add_wch(VALUE dummy, VALUE arg1) {
+  wchar_t c = NUM2ULONG(arg1);
+  return INT2NUM(add_wch((cchar_t *)&c));
+}
 static VALUE rbncurs_addchnstr(VALUE dummy, VALUE arg1, VALUE arg2) {
     chtype * chstr = RB2CHSTR(arg1);
     VALUE return_value = INT2NUM(addchnstr(chstr,  NUM2INT(arg2)));
@@ -1501,6 +1505,10 @@ static VALUE rbncurs_vline(VALUE dummy, VALUE arg1, VALUE arg2) {
 static VALUE rbncurs_waddch(VALUE dummy, VALUE arg1, VALUE arg2) {
     return INT2NUM(waddch(get_window(arg1),  (int) NUM2ULONG(arg2)));
 }
+static VALUE rbncurs_wadd_wch(VALUE dummy, VALUE arg1, VALUE arg2) {
+  cchar_t t = { 0, { NUM2ULONG(arg2), 0 } };
+  return INT2NUM(wadd_wch(get_window(arg1), &t));
+}
 static VALUE rbncurs_waddchnstr(VALUE dummy, VALUE arg1, VALUE arg2, VALUE arg3) {
     chtype * chstr = RB2CHSTR(arg2);
     VALUE return_value = INT2NUM(waddchnstr(get_window(arg1), chstr,
@@ -1722,6 +1730,7 @@ static VALUE rbncurs_newterm(VALUE dummy, VALUE rb_type, VALUE rb_outfd, VALUE r
 
 static void init_functions_2(void) {
     NCFUNC(addch, 1);
+    NCFUNC(add_wch, 1);
     NCFUNC(addchnstr, 2);
     NCFUNC(addchstr, 1);
     NCFUNC(addnstr, 2);
@@ -1985,6 +1994,7 @@ static void init_functions_2(void) {
 #endif
     NCFUNC(vline, 2);
     NCFUNC(waddch, 2);
+    NCFUNC(wadd_wch, 2);
     NCFUNC(waddchnstr, 3);
     NCFUNC(waddchstr, 2);
     NCFUNC(waddnstr, 3);
