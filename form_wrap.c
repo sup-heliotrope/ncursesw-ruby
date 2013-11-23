@@ -29,6 +29,9 @@
 
 #if defined(HAVE_FORM_H) || defined(HAVE_NCURSESW_FORM_H)
 
+# define USE_WIDEC_SUPPORT 1
+# include <wchar.h>
+
 #include "form_wrap.h"
 #include "ncurses_wrap.h"
 #include "compat.h"
@@ -446,6 +449,7 @@ static VALUE rbncurs_c_form_driver(VALUE rb_form, VALUE c) {
 static VALUE rbncurs_m_form_driver(VALUE dummy, VALUE rb_form, VALUE c)
 { return rbncurs_c_form_driver(rb_form, c); }
 
+# ifdef HAVE_FORM_DRIVER_W
 /* Form driver W */
 static VALUE rbncurs_c_form_driver_w(VALUE rb_form, VALUE type, VALUE c) {
   FORM* form = get_form(rb_form);
@@ -453,6 +457,7 @@ static VALUE rbncurs_c_form_driver_w(VALUE rb_form, VALUE type, VALUE c) {
 }
 static VALUE rbncurs_m_form_driver_w(VALUE dummy, VALUE rb_form, VALUE type, VALUE c)
 { return rbncurs_c_form_driver_w(rb_form, type, c); }
+# endif
 
 /*
  * form_page(3x)
@@ -1288,7 +1293,11 @@ void init_form(void)
   FORM_SNG_FUNC(field_type,1);
   /*   FORM_SNG_FUNC(field_userptr,1); */
   FORM_SNG_FUNC(form_driver,2);
+
+  # ifdef HAVE_FORM_DRIVER_W
   FORM_SNG_FUNC(form_driver_w,3);
+  #endif
+
   FORM_SNG_FUNC(form_fields,1);
   FORM_SNG_FUNC(form_init,1);
   FORM_SNG_FUNC(form_opts,1);
@@ -1369,7 +1378,11 @@ void init_form(void)
   RB_CLASS_METH(cFORM, NULL, field_init,0);
   RB_CLASS_METH(cFORM, NULL, field_term,0);
   RB_CLASS_METH(cFORM, "driver", form_driver,1);
+
+  # ifdef HAVE_FORM_DRIVER_W
   RB_CLASS_METH(cFORM, "driver", form_driver_w,2);
+  #endif
+
   RB_CLASS_METH(cFORM, "fields", form_fields,0);
   RB_CLASS_METH(cFORM, "init", form_init,0);
   RB_CLASS_METH(cFORM, "opts", form_opts,0);
