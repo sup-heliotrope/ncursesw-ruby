@@ -64,6 +64,8 @@
   - v*printw functions (but normal printw functions are supported!)
 */
 
+# define _XOPEN_SOURCE_EXTENDED
+
 #if defined(HAVE_GETWIN) || defined(HAVE_PUTWIN)
 #  ifdef HAVE_UNISTD_H
 #    include <unistd.h>

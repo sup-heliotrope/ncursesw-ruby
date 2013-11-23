@@ -105,6 +105,11 @@ have_func("wchgat")
 have_func("wcolor_set")
 have_func("getattrs")
 
+puts "checking for ncursesw (wide char) functions..."
+if not have_func("wget_wch")
+  raise "no wget_wch found."
+end
+
 puts "checking which debugging functions to wrap..."
 have_func("_tracef")
 have_func("_tracedump")
@@ -129,9 +134,15 @@ end
 
 puts "checking for the form library..."
 if have_header("form.h")
-  have_library("formw", "new_form")
+  if not have_library("formw", "new_form")
+    raise "formw library not found"
+  end
 else
   raise "form library not found."
+end
+
+if have_library("formw", "form_driver_w")
+  $CFLAGS += " -DHAVE_FORM_DRIVER_W"
 end
 
 puts "checking for the menu library..."
