@@ -3,7 +3,7 @@
  * Contributed by Simon Kaczor <skaczor@cox.net>
  * Prognosoft Inc. <http://www.prognosoft.biz>
  * Copyright 2004
- * 
+ *
  *  This module is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
@@ -20,6 +20,7 @@
  *
  * Changes
  * (C) 2011 Tobias Herzke
+ * (C) 2013 Gaute Hope <eg@gaute.vetsj.com>
  */
 
 #if !defined(FORM_HH) && (defined(HAVE_FORM_H) || defined(HAVE_NCURSESW_FORM_H))
@@ -40,7 +41,7 @@ extern VALUE cFORM;
 /*extern VALUE cPAGE;*/
 
 typedef struct {
- 		bool (* field_check)(FIELD *,const void *); 
+ 		bool (* field_check)(FIELD *,const void *);
 		FIELDTYPE* fieldtype;
 } FLDCHKFUNC;
 

@@ -7,6 +7,7 @@
  * Changes:
  * (C) 2004 Tobias Peters
  * (C) 2005 2009 Tobias Herzke
+ * (C) 2013 Gaute Hope <eg@gaute.vetsj.com>
  *
  *  This module is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public

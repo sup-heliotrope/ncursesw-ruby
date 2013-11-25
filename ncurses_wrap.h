@@ -3,6 +3,7 @@
  * (C) 2002, 2003 Tobias Peters <t-peters@berlios.de>
  * (C) 2004 Simon Kaczor <skaczor@cox.net>
  * (C) 2009 2011 Tobias Herzke
+ * (C) 2013 Gaute Hope <eg@gaute.vetsj.com>
  *
  *  This module is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
