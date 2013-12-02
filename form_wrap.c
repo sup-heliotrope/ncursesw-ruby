@@ -1380,7 +1380,7 @@ void init_form(void)
   RB_CLASS_METH(cFORM, "driver", form_driver,1);
 
   # ifdef HAVE_FORM_DRIVER_W
-  RB_CLASS_METH(cFORM, "driver", form_driver_w,2);
+  RB_CLASS_METH(cFORM, "driver_w", form_driver_w,2);
   #endif
 
   RB_CLASS_METH(cFORM, "fields", form_fields,0);
