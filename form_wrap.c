@@ -30,7 +30,6 @@
 
 #if defined(HAVE_FORM_H) || defined(HAVE_NCURSESW_FORM_H)
 
-# define USE_WIDEC_SUPPORT 1
 # include <wchar.h>
 
 #include "form_wrap.h"
