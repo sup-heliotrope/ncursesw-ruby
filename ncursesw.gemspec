@@ -7,15 +7,15 @@ SUMMARY = 'This wrapper provides access to the functions, macros, global variabl
            'Functions and external variables are implemented as singleton functions of the Module Ncurses.'
 
 spec = Gem::Specification.new do |s|
-  s.name        = 'ncursesw-sup'
-  s.version     = '1.3.1.4'
+  s.name        = 'ncursesw'
+  s.version     = '1.3.0.0'
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ['Tobias Herzke']
-  s.email       = ['t-peters@users.berlios.de']
+  s.authors     = ['Tobias Herzke', 'Sup developers']
+  s.email       = ['sup-talk@rubyforge.org']
   s.has_rdoc    = false
   s.homepage    = 'http://github.com/sup-heliotrope/ncursesw-ruby'
   s.summary     = SUMMARY
-  s.description = "Hacked up version of ncurses gem that supports wide characters for supmua.org"
+  s.description = "Tweaked version of ncursesw from http://ncurses-ruby.berlios.de/."
 
   s.require_paths = ['lib']
   s.files         = [
@@ -51,3 +51,4 @@ spec = Gem::Specification.new do |s|
   ]
   s.extensions    = ['extconf.rb']
 end
+
