@@ -3,10 +3,11 @@
  * Contributed by Simon Kaczor <skaczor@cox.net>
  * Prognosoft Inc. <http://www.prognosoft.biz>
  * Copyright 2004
- * 
+ *
  * Changes:
  * (C) 2004 Tobias Peters
  * (C) 2005 2009 Tobias Herzke
+ * (C) 2013 Gaute Hope <eg@gaute.vetsj.com>
  *
  *  This module is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -29,6 +30,8 @@
 
 #if defined(HAVE_FORM_H) || defined(HAVE_NCURSESW_FORM_H)
 
+# include <wchar.h>
+
 #include "form_wrap.h"
 #include "ncurses_wrap.h"
 #include "compat.h"
@@ -38,7 +41,7 @@ VALUE cFIELD;
 VALUE cFIELDTYPE;
 VALUE cFORM;
 
-void init_err_codes() 
+void init_err_codes()
 {
   /* The routine succeeded. */
   FORM_DEF_CONST(E_OK);
@@ -362,14 +365,14 @@ static VALUE get_proc_hash(int hook) {
 }
 
 /*
- * Returns an existing Ruby Proc for a given owning "object" and hook type. 
+ * Returns an existing Ruby Proc for a given owning "object" and hook type.
  * Qnil will be returned if no Proc was associated with the owner
  */
 static VALUE get_proc(void* owner, int hook) {
   if (owner == 0) return Qnil;
   {
 	 VALUE owner_adress  = INT2NUM((long)(owner));
-	 VALUE proc_hash     = get_proc_hash(hook);		 
+	 VALUE proc_hash     = get_proc_hash(hook);
 	 VALUE proc          = rb_hash_aref(proc_hash, owner_adress);
 	 return proc;
   }
@@ -400,12 +403,12 @@ static VALUE rbncurs_m_new_form(VALUE dummy, VALUE rb_field_array)
   long n = rbncurs_array_length(rb_field_array);
   /* Will ncurses free this array? If not, must do it after calling free_form(). */
   FIELD** fields = ALLOC_N(FIELD*, (n+1));
-  long i;  
+  long i;
   for (i=0; i<n; i++){
-	 fields[i] = get_field(rb_ary_entry(rb_field_array, i)); 
+	 fields[i] = get_field(rb_ary_entry(rb_field_array, i));
   }
   fields[n] = NULL;
-  return wrap_form(new_form(fields)); 
+  return wrap_form(new_form(fields));
 }
 
 static VALUE rbncurs_c_free_form(VALUE rb_form) {
@@ -446,12 +449,22 @@ static VALUE rbncurs_c_form_driver(VALUE rb_form, VALUE c) {
 static VALUE rbncurs_m_form_driver(VALUE dummy, VALUE rb_form, VALUE c)
 { return rbncurs_c_form_driver(rb_form, c); }
 
+# ifdef HAVE_FORM_DRIVER_W
+/* Form driver W */
+static VALUE rbncurs_c_form_driver_w(VALUE rb_form, VALUE type, VALUE c) {
+  FORM* form = get_form(rb_form);
+  return INT2NUM(form_driver_w(form, NUM2INT(type), NUM2INT(c)));
+}
+static VALUE rbncurs_m_form_driver_w(VALUE dummy, VALUE rb_form, VALUE type, VALUE c)
+{ return rbncurs_c_form_driver_w(rb_form, type, c); }
+# endif
+
 /*
  * form_page(3x)
  */
 static VALUE rbncurs_c_set_current_field(VALUE rb_form, VALUE rb_field) {
   FORM* form = get_form(rb_form);
-  FIELD* field = get_field(rb_field);	 
+  FIELD* field = get_field(rb_field);
   return INT2NUM(set_current_field(form, field));
 }
 static VALUE rbncurs_m_set_current_field(VALUE dummy, VALUE rb_form, VALUE rb_field)
@@ -540,12 +553,12 @@ static VALUE rbncurs_c_free_field(VALUE rb_field) {
 }
 static VALUE rbncurs_m_free_field(VALUE dummy, VALUE rb_field)
 { return rbncurs_c_free_field(rb_field); }
- 
+
 
 /*
  * form_field_info(3x)
  */
-static VALUE rbncurs_c_field_info(VALUE rb_field, VALUE rows, VALUE cols, 
+static VALUE rbncurs_c_field_info(VALUE rb_field, VALUE rows, VALUE cols,
 											 VALUE frow, VALUE fcol, VALUE nrow, VALUE nbuf) {
   if (rb_obj_is_instance_of(rows, rb_cArray) != Qtrue
 		|| rb_obj_is_instance_of(cols, rb_cArray) != Qtrue
@@ -560,7 +573,7 @@ static VALUE rbncurs_c_field_info(VALUE rb_field, VALUE rows, VALUE cols,
   else {
 	 FIELD* field = get_field(rb_field);
 	 int vals[6] = {0,0,0,0,0,0};
-	
+
 	 int result = field_info(field, &vals[0],&vals[1],&vals[2],&vals[3],&vals[4],&vals[5]);
 	 rb_ary_push(rows, INT2NUM(vals[0]));
 	 rb_ary_push(cols, INT2NUM(vals[1]));
@@ -571,15 +584,15 @@ static VALUE rbncurs_c_field_info(VALUE rb_field, VALUE rows, VALUE cols,
 	 return INT2NUM(result);
   }
 }
-static VALUE rbncurs_m_field_info(VALUE dummy, VALUE rb_field, VALUE rows, VALUE cols, 
+static VALUE rbncurs_m_field_info(VALUE dummy, VALUE rb_field, VALUE rows, VALUE cols,
 											 VALUE frow, VALUE fcol, VALUE nrow, VALUE nbuf)
 { return rbncurs_c_field_info(rb_field, rows, cols, frow, fcol, nrow, nbuf); }
 
-static VALUE rbncurs_c_dynamic_field_info(VALUE rb_field, VALUE rows, VALUE cols, 
+static VALUE rbncurs_c_dynamic_field_info(VALUE rb_field, VALUE rows, VALUE cols,
 														VALUE max) {
   if (rb_obj_is_instance_of(rows, rb_cArray) != Qtrue
 		|| rb_obj_is_instance_of(cols, rb_cArray) != Qtrue
-		|| rb_obj_is_instance_of(max, rb_cArray) != Qtrue) {		
+		|| rb_obj_is_instance_of(max, rb_cArray) != Qtrue) {
 	 rb_raise(rb_eArgError,
 				 "rows, cols and max arguments must be empty Arrays");
 	 return Qnil;
@@ -587,7 +600,7 @@ static VALUE rbncurs_c_dynamic_field_info(VALUE rb_field, VALUE rows, VALUE cols
   else {
   	FIELD* field = get_field(rb_field);
   	int vals[3] = {0,0,0};
-	
+
   	int result = dynamic_field_info(field, &vals[0],&vals[1],&vals[2]);
 	rb_ary_push(rows, INT2NUM(vals[0]));
 	rb_ary_push(cols, INT2NUM(vals[1]));
@@ -595,7 +608,7 @@ static VALUE rbncurs_c_dynamic_field_info(VALUE rb_field, VALUE rows, VALUE cols
 	return INT2NUM(result);
   }
 }
-static VALUE rbncurs_m_dynamic_field_info(VALUE dummy, VALUE rb_field, VALUE rows, VALUE cols, 
+static VALUE rbncurs_m_dynamic_field_info(VALUE dummy, VALUE rb_field, VALUE rows, VALUE cols,
 														VALUE max)
 { return rbncurs_c_dynamic_field_info(rb_field, rows, cols, max); }
 /*
@@ -608,12 +621,12 @@ static VALUE rbncurs_c_set_field_type(int argc, VALUE* argv, VALUE rb_field) {
 
   rb_scan_args(argc, argv, "13", &rb_fieldtype, &arg3, &arg4, &arg5);
   ftype = get_fieldtype(rb_fieldtype);
-	
+
   if (ftype == TYPE_ALNUM ||
 		ftype == TYPE_ALPHA) {
 	 if (argc != 2)
 		rb_raise(rb_eArgError, "TYPE_ALNUM and TYPE_ALPHA require one additional argument");
-	 return INT2NUM(set_field_type(field, ftype, 
+	 return INT2NUM(set_field_type(field, ftype,
 											 NUM2INT(arg3)));
   }
   if (ftype == TYPE_ENUM) {
@@ -629,7 +642,7 @@ static VALUE rbncurs_c_set_field_type(int argc, VALUE* argv, VALUE rb_field) {
 		  list[i] = STR2CSTR(rb_ary_entry(arg3, (long)i));
 		}
 		list[n] = NULL;
-		return INT2NUM(set_field_type(field, ftype, 
+		return INT2NUM(set_field_type(field, ftype,
 												list,
 												RTEST(arg4),
 												RTEST(arg5)));
@@ -638,7 +651,7 @@ static VALUE rbncurs_c_set_field_type(int argc, VALUE* argv, VALUE rb_field) {
   else if (ftype == TYPE_INTEGER) {
 	 if (argc != 4)
 		rb_raise(rb_eArgError, "TYPE_INTEGER requires three additional arguments");
-	 return INT2NUM(set_field_type(field, ftype, 
+	 return INT2NUM(set_field_type(field, ftype,
 											 NUM2INT(arg3),
 											 NUM2LONG(arg4),
 											 NUM2LONG(arg5)));
@@ -646,7 +659,7 @@ static VALUE rbncurs_c_set_field_type(int argc, VALUE* argv, VALUE rb_field) {
   else if (ftype == TYPE_NUMERIC) {
 	 if (argc != 4)
 		rb_raise(rb_eArgError, "TYPE_NUMERIC requires three additional arguments");
-	 return INT2NUM(set_field_type(field, ftype, 
+	 return INT2NUM(set_field_type(field, ftype,
 											 NUM2INT(arg3),
 											 NUM2DBL(arg4),
 											 NUM2DBL(arg5)));
@@ -654,15 +667,15 @@ static VALUE rbncurs_c_set_field_type(int argc, VALUE* argv, VALUE rb_field) {
   else if (ftype == TYPE_REGEXP){
 	 if (argc != 2)
 		rb_raise(rb_eArgError, "TYPE_REGEXP requires one additional argument");
-	 return INT2NUM(set_field_type(field, ftype, 
+	 return INT2NUM(set_field_type(field, ftype,
 											 STR2CSTR(arg3)));
   }
-  else if (ftype == TYPE_IPV4){	
+  else if (ftype == TYPE_IPV4){
 	 if (argc != 1)
 		rb_raise(rb_eArgError, "TYPE_IPV4 has no additional arguments");
 	 return INT2NUM(set_field_type(field, ftype));
   }
-  else {	
+  else {
 	 /*  It is a user-defined field type. */
 	 /*  Will store the arguments associated with this field */
 	 /*  for use in the callback function. */
@@ -673,7 +686,7 @@ static VALUE rbncurs_c_set_field_type(int argc, VALUE* argv, VALUE rb_field) {
 	 /*  the block-argument used in finding the appropriate Ruby Proc */
 	 return INT2NUM(set_field_type(field, ftype, field));
   }
-	
+
 }
 static VALUE rbncurs_m_set_field_type(int argc, VALUE* argv, VALUE dummy)
 { return rbncurs_c_set_field_type(argc-1, argv+1, argv[0]); }
@@ -787,7 +800,7 @@ static VALUE rbncurs_c_set_form_fields(VALUE rb_form, VALUE rb_field_array) {
   long i;
   FORM* form = NULL;
   for (i=0; i<n; i++){
-	 fields[i] = get_field(rb_ary_entry(rb_field_array, i)); 
+	 fields[i] = get_field(rb_ary_entry(rb_field_array, i));
   }
   fields[n] = NULL;
   form = get_form(rb_form);
@@ -801,7 +814,7 @@ static VALUE rbncurs_c_form_fields(VALUE rb_form) {
   FIELD** fields = form_fields(form);
   VALUE arr = Qundef;
   int i;
-  if (fields == NULL) 
+  if (fields == NULL)
 	 rb_raise(rb_eRuntimeError, "Error retrieving form fields");
   arr = rb_ary_new();
   i=0;
@@ -843,12 +856,12 @@ static void field_init_hook(FORM* form) {
 static VALUE rbncurs_c_set_field_init(VALUE rb_form, VALUE proc) {
   FORM* form = NULL;
   if (!rb_obj_is_kind_of(rb_form, cFORM))
-	 rb_raise(rb_eArgError, "arg1 must be a FORM object");		 
+	 rb_raise(rb_eArgError, "arg1 must be a FORM object");
   if (!rb_obj_is_kind_of(proc, rb_cProc))
-	 rb_raise(rb_eArgError, "arg2 must be a Proc object");		 
+	 rb_raise(rb_eArgError, "arg2 must be a Proc object");
   form = get_form(rb_form);
   reg_proc(form, FIELD_INIT_HOOK, proc);
-  if (proc != Qnil)	{	
+  if (proc != Qnil)	{
 	 return INT2NUM(set_field_init(form, field_init_hook));
   }
   else {
@@ -876,12 +889,12 @@ static void field_term_hook(FORM* form) {
 static VALUE rbncurs_c_set_field_term(VALUE rb_form, VALUE proc) {
   FORM * form = NULL;
   if (!rb_obj_is_kind_of(rb_form, cFORM))
-	 rb_raise(rb_eArgError, "arg1 must be a FORM object");		 
+	 rb_raise(rb_eArgError, "arg1 must be a FORM object");
   if (!rb_obj_is_kind_of(proc, rb_cProc))
-	 rb_raise(rb_eArgError, "arg2 must be a Proc object");		 
+	 rb_raise(rb_eArgError, "arg2 must be a Proc object");
   form = get_form(rb_form);
   reg_proc(form, FIELD_TERM_HOOK, proc);
-  if (proc != Qnil)	{	
+  if (proc != Qnil)	{
 	 return INT2NUM(set_field_term(form, field_term_hook));
   }
   else {
@@ -909,12 +922,12 @@ static void form_init_hook(FORM* form) {
 static VALUE rbncurs_c_set_form_init(VALUE rb_form, VALUE proc) {
   FORM * form = NULL;
   if (!rb_obj_is_kind_of(rb_form, cFORM))
-	 rb_raise(rb_eArgError, "arg1 must be a FORM object");		 
+	 rb_raise(rb_eArgError, "arg1 must be a FORM object");
   if (!rb_obj_is_kind_of(proc, rb_cProc))
-	 rb_raise(rb_eArgError, "arg2 must be a Proc object");		 
+	 rb_raise(rb_eArgError, "arg2 must be a Proc object");
   form = get_form(rb_form);
   reg_proc(form, FORM_INIT_HOOK, proc);
-  if (proc != Qnil)	{	
+  if (proc != Qnil)	{
 	 return INT2NUM(set_form_init(form, form_init_hook));
   }
   else {
@@ -942,12 +955,12 @@ static void form_term_hook(FORM* form) {
 static VALUE rbncurs_c_set_form_term(VALUE rb_form, VALUE proc) {
   FORM * form = NULL;
   if (!rb_obj_is_kind_of(rb_form, cFORM))
-	 rb_raise(rb_eArgError, "arg1 must be a FORM object");		 
+	 rb_raise(rb_eArgError, "arg1 must be a FORM object");
   if (!rb_obj_is_kind_of(proc, rb_cProc))
-	 rb_raise(rb_eArgError, "arg2 must be a Proc object");		 
+	 rb_raise(rb_eArgError, "arg2 must be a Proc object");
   form = get_form(rb_form);
   reg_proc(form, FORM_TERM_HOOK, proc);
-  if (proc != Qnil)	{	
+  if (proc != Qnil)	{
 	 return INT2NUM(set_form_term(form, form_term_hook));
   }
   else {
@@ -1100,7 +1113,7 @@ static VALUE rbncurs_c_scale_form(VALUE rb_form, VALUE rows, VALUE columns) {
 	 return Qnil;
   }
   else {
-	 int vals[2] = {0,0};	
+	 int vals[2] = {0,0};
 	 int result = scale_form(form, &vals[0],&vals[1]);
 	 rb_ary_push(rows, INT2NUM(vals[0]));
 	 rb_ary_push(columns, INT2NUM(vals[1]));
@@ -1113,28 +1126,28 @@ static VALUE rbncurs_m_scale_form(VALUE dummy, VALUE rb_form, VALUE rows, VALUE 
 /*
  * form_fieldtype
  */
-static void* make_arg(va_list* ap) {	
+static void* make_arg(va_list* ap) {
   /*  This method creates a list of arguments to be passed */
   /*  to the validation functions (char_check and field_check). */
-  FIELD* field =  va_arg(*ap, FIELD*);	
+  FIELD* field =  va_arg(*ap, FIELD*);
   FIELDTYPE* fieldtype = field_type(field);
   VALUE proc = get_proc(fieldtype, FIELDTYPE_FIELD_CHECK_HOOK);
   if (proc == Qnil) {
 	 proc = get_proc(fieldtype, FIELDTYPE_CHAR_CHECK_HOOK);
   }
-	
+
   /*  Compare number of arguments in Ruby Proc with that of set_field_type */
-  if (proc != Qnil) {	
+  if (proc != Qnil) {
 	 VALUE argc = rb_funcall(proc, rb_intern("arity"),0);
 	 VALUE args = get_proc(field, FIELDTYPE_ARGS);
-	 if (args != Qnil) {		
-		if (NUM2INT(argc)-1 != rbncurs_array_length(args)) {	
+	 if (args != Qnil) {
+		if (NUM2INT(argc)-1 != rbncurs_array_length(args)) {
 		  char msg[500];
 		  snprintf(msg, 500, "The validation functions for this field type need %d additional arguments.",(int)(NUM2INT(argc)-1));
 		  msg[499]=0;
 		  rb_raise(rb_eArgError, "%s", msg);
 		}
-	 } 
+	 }
   }
   /*  field will be the only argument in field_check/char_check callback */
   /*  and will be used to locate the appropriate Ruby Proc */
@@ -1143,10 +1156,10 @@ static void* make_arg(va_list* ap) {
 static bool field_check(FIELD* field, const void* argblock) {
   FIELDTYPE* fieldtype = field_type(field);
   VALUE proc = get_proc(fieldtype, FIELDTYPE_FIELD_CHECK_HOOK);
-  if (proc != Qnil) 
+  if (proc != Qnil)
 	 {
 		VALUE args = rb_ary_dup(get_proc(field, FIELDTYPE_ARGS));
-		rb_ary_unshift(args, wrap_field(field));		
+		rb_ary_unshift(args, wrap_field(field));
 		return RTEST(rb_apply(proc, rb_intern("call"), args));
 	 }
   return 1;
@@ -1165,18 +1178,18 @@ static bool char_check(int c, const void* argblock) {
   }
   return 1;
 }
-static VALUE rbncurs_m_new_fieldtype(VALUE dummy, VALUE field_check_proc, VALUE char_check_proc) 
+static VALUE rbncurs_m_new_fieldtype(VALUE dummy, VALUE field_check_proc, VALUE char_check_proc)
 {
   FIELDTYPE* fieldtype = new_fieldtype(field_check_proc == Qnil ? NULL : field_check,
-													char_check_proc == Qnil ? NULL : char_check);	
+													char_check_proc == Qnil ? NULL : char_check);
   set_fieldtype_arg(fieldtype, make_arg, NULL, NULL);
   if (field_check_proc != Qnil) {
 	 reg_proc(fieldtype, FIELDTYPE_FIELD_CHECK_HOOK, field_check_proc);
-  }  
+  }
   if (char_check_proc != Qnil) {
 	 reg_proc(fieldtype, FIELDTYPE_CHAR_CHECK_HOOK, char_check_proc);
   }
-  
+
   return wrap_fieldtype(fieldtype);
 }
 
@@ -1208,13 +1221,13 @@ static bool prev_choice(FIELD* field, const void* argblock) {
 
 static VALUE rbncurs_c_set_fieldtype_choice(VALUE rb_fieldtype, VALUE next_choice_proc, VALUE prev_choice_proc) {
   FIELDTYPE* fieldtype = get_fieldtype(rb_fieldtype);
-  int result = set_fieldtype_choice(fieldtype, 
-												next_choice_proc == Qnil ? NULL : next_choice, 
+  int result = set_fieldtype_choice(fieldtype,
+												next_choice_proc == Qnil ? NULL : next_choice,
 												prev_choice_proc == Qnil ? NULL : prev_choice);
   if (next_choice_proc != Qnil)
 	 reg_proc(fieldtype, FIELDTYPE_NEXT_CHOICE_HOOK, next_choice_proc);
   if (prev_choice_proc != Qnil)
-	 reg_proc(fieldtype, FIELDTYPE_PREV_CHOICE_HOOK, prev_choice_proc);	
+	 reg_proc(fieldtype, FIELDTYPE_PREV_CHOICE_HOOK, prev_choice_proc);
   return INT2NUM(result);
 }
 static VALUE rbncurs_m_set_fieldtype_choice(VALUE dummy, VALUE rb_fieldtype, VALUE next_choice_proc, VALUE prev_choice_proc)
@@ -1254,9 +1267,9 @@ static VALUE rbncurs_m_pos_form_cursor(VALUE dummy, VALUE rb_form)
 
 void init_form(void)
 {
-	
+
   mForm = rb_define_module_under(mNcurses, "Form");
-	
+
   FORM_SNG_FUNC(current_field,1);
   FORM_SNG_FUNC(data_ahead,1);
   FORM_SNG_FUNC(data_behind,1);
@@ -1280,6 +1293,11 @@ void init_form(void)
   FORM_SNG_FUNC(field_type,1);
   /*   FORM_SNG_FUNC(field_userptr,1); */
   FORM_SNG_FUNC(form_driver,2);
+
+  # ifdef HAVE_FORM_DRIVER_W
+  FORM_SNG_FUNC(form_driver_w,3);
+  #endif
+
   FORM_SNG_FUNC(form_fields,1);
   FORM_SNG_FUNC(form_init,1);
   FORM_SNG_FUNC(form_opts,1);
@@ -1335,7 +1353,7 @@ void init_form(void)
   init_opts_constants();
   init_just_constants();
   init_form_opts_constants();
-	
+
   /*  Hashes to store registered blocks (Proc) */
   {
 	 VALUE hashes = rb_iv_set(mForm, "@proc_hashes", rb_ary_new());
@@ -1360,6 +1378,11 @@ void init_form(void)
   RB_CLASS_METH(cFORM, NULL, field_init,0);
   RB_CLASS_METH(cFORM, NULL, field_term,0);
   RB_CLASS_METH(cFORM, "driver", form_driver,1);
+
+  # ifdef HAVE_FORM_DRIVER_W
+  RB_CLASS_METH(cFORM, "driver_w", form_driver_w,2);
+  #endif
+
   RB_CLASS_METH(cFORM, "fields", form_fields,0);
   RB_CLASS_METH(cFORM, "init", form_init,0);
   RB_CLASS_METH(cFORM, "opts", form_opts,0);
