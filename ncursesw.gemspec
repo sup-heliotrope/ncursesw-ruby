@@ -1,7 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-require 'rubygems'
-
 SUMMARY = 'This wrapper provides access to the functions, macros, global variables and constants ' +
            'of the ncurses library.  These are mapped to a Ruby Module named "Ncurses":  ' +
            'Functions and external variables are implemented as singleton functions of the Module Ncurses.'
