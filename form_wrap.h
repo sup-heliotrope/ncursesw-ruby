@@ -26,6 +26,8 @@
 #if !defined(FORM_HH) && (defined(HAVE_FORM_H) || defined(HAVE_NCURSESW_FORM_H))
 #define FORM_HH
 
+# define _XOPEN_SOURCE_EXTENDED
+
 #ifdef HAVE_FORM_H
 #include <form.h>
 #else
