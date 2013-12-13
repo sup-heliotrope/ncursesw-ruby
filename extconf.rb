@@ -23,12 +23,14 @@
 
 require "mkmf"
 
-$CFLAGS  += " -g -Wformat -Werror=format-security"
+$CFLAGS  += " -g -Wformat -Werror=format-security -Waddress"
 
 have_header("unistd.h")
 have_header("locale.h")
 
-if have_header("ncurses.h")
+if have_header ("ncursesw/curses.h") # ubuntu 13
+  curses_header = "ncursesw/curses.h"
+elsif have_header("ncurses.h")
   curses_header = "ncurses.h"
 elsif have_header("ncurses/curses.h")
   curses_header = "ncurses/curses.h"
