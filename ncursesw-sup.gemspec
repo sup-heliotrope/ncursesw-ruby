@@ -8,7 +8,7 @@ SUMMARY = 'This wrapper provides access to the functions, macros, global variabl
 
 spec = Gem::Specification.new do |s|
   s.name        = 'ncursesw-sup'
-  s.version     = '1.3.1.3'
+  s.version     = '1.3.1.4'
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Tobias Herzke']
   s.email       = ['t-peters@users.berlios.de']
