@@ -573,10 +573,12 @@ static chtype * RB2CHSTR(VALUE array)
 static VALUE rbncurs_addch(VALUE dummy, VALUE arg1) {
     return INT2NUM(addch((int) NUM2ULONG(arg1)));
 }
+#ifdef HAVE_ADD_WCH
 static VALUE rbncurs_add_wch(VALUE dummy, VALUE arg1) {
   wchar_t c = NUM2ULONG(arg1);
   return INT2NUM(add_wch((cchar_t *)&c));
 }
+#endif
 static VALUE rbncurs_addchnstr(VALUE dummy, VALUE arg1, VALUE arg2) {
     chtype * chstr = RB2CHSTR(arg1);
     VALUE return_value = INT2NUM(addchnstr(chstr,  NUM2INT(arg2)));
@@ -918,6 +920,7 @@ static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
   return rbncurshelper_do_wgetch_functor (c_win, &wgetch);
 }
 
+#ifdef HAVE_GET_WCH
 /* not thread safe: wide char getch */
 static wint_t wget_wch_back;
 static int my_wget_wch (WINDOW *c_win) {
@@ -931,14 +934,17 @@ static VALUE rbncurshelper_nonblocking_wget_wch(WINDOW *c_win) {
   VALUE r = rb_assoc_new (INT2NUM(retcode), LONG2NUM(wget_wch_back));
   return r;
 }
+#endif
 
 static VALUE rbncurs_getch(VALUE dummy) {
     return INT2NUM(rbncurshelper_nonblocking_wgetch(stdscr));
 }
 
+#ifdef HAVE_GET_WCH
 static VALUE rbncurs_get_wch(VALUE dummy) {
     return rbncurshelper_nonblocking_wget_wch(stdscr);
 }
+#endif
 
 static VALUE rbncurs_halfdelay(VALUE dummy, VALUE arg1) {
     return INT2NUM(rbncurshelper_halfdelay_cbreak(NUM2INT(arg1), 1));
@@ -1506,10 +1512,12 @@ static VALUE rbncurs_vline(VALUE dummy, VALUE arg1, VALUE arg2) {
 static VALUE rbncurs_waddch(VALUE dummy, VALUE arg1, VALUE arg2) {
     return INT2NUM(waddch(get_window(arg1),  (int) NUM2ULONG(arg2)));
 }
+#ifdef HAVE_ADD_WCH
 static VALUE rbncurs_wadd_wch(VALUE dummy, VALUE arg1, VALUE arg2) {
   cchar_t t = { 0, { NUM2ULONG(arg2), 0 } };
   return INT2NUM(wadd_wch(get_window(arg1), &t));
 }
+#endif
 static VALUE rbncurs_waddchnstr(VALUE dummy, VALUE arg1, VALUE arg2, VALUE arg3) {
     chtype * chstr = RB2CHSTR(arg2);
     VALUE return_value = INT2NUM(waddchnstr(get_window(arg1), chstr,
@@ -1585,9 +1593,11 @@ static VALUE rbncurs_wgetch(VALUE dummy, VALUE arg1) {
     return INT2NUM(rbncurshelper_nonblocking_wgetch(get_window(arg1)));
 }
 
+#ifdef HAVE_GET_WCH
 static VALUE rbncurs_wget_wch(VALUE dummy, VALUE arg1) {
     return rbncurshelper_nonblocking_wget_wch(get_window(arg1));
 }
+#endif
 
 static VALUE rbncurs_whline(VALUE dummy, VALUE arg1, VALUE arg2, VALUE arg3) {
     return INT2NUM(whline(get_window(arg1),  (int) NUM2ULONG(arg2),  NUM2INT(arg3)));
@@ -1731,7 +1741,9 @@ static VALUE rbncurs_newterm(VALUE dummy, VALUE rb_type, VALUE rb_outfd, VALUE r
 
 static void init_functions_2(void) {
     NCFUNC(addch, 1);
+#ifdef HAVE_ADD_WCH
     NCFUNC(add_wch, 1);
+#endif
     NCFUNC(addchnstr, 2);
     NCFUNC(addchstr, 1);
     NCFUNC(addnstr, 2);
@@ -1814,8 +1826,10 @@ static void init_functions_2(void) {
     NCFUNC(flushinp, 0);
     NCFUNC(getbkgd, 1);
     NCFUNC(getch, 0);
+#ifdef HAVE_GET_WCH
     NCFUNC(get_wch, 0);
     NCFUNC(wget_wch, 1);
+#endif
     NCFUNC(halfdelay, 1);
     rb_define_module_function(mNcurses, "has_colors?",
                               (&rbncurs_has_colors),
@@ -1995,7 +2009,9 @@ static void init_functions_2(void) {
 #endif
     NCFUNC(vline, 2);
     NCFUNC(waddch, 2);
+#ifdef HAVE_ADD_WCH
     NCFUNC(wadd_wch, 2);
+#endif
     NCFUNC(waddchnstr, 3);
     NCFUNC(waddchstr, 2);
     NCFUNC(waddnstr, 3);

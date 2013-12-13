@@ -146,6 +146,9 @@ if have_library("formw", "form_driver_w")
   $CFLAGS += " -DHAVE_FORM_DRIVER_W"
 end
 
+have_func("add_wch")
+have_func("get_wch")
+
 puts "checking for the menu library..."
 if have_header("menu.h")
   have_library("menu", "new_menu")
