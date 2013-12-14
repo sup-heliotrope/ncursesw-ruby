@@ -670,10 +670,10 @@ static VALUE rbncurs_attr_get(VALUE dummy, VALUE rb_attrs, VALUE rb_pair,
     {
         attr_t attrs = 0;
         short  pair  = 0;
-        int return_value = attr_get(&attrs, &pair, 0);
+        attr_get(&attrs, &pair, 0); /* will always return true */
         rb_ary_push(rb_attrs, INT2NUM(attrs));
         rb_ary_push(rb_pair, INT2NUM(pair));
-        return INT2NUM(return_value);
+        return INT2NUM(1);
     }
 }
 static VALUE rbncurs_wattr_get(VALUE dummy,VALUE win, VALUE rb_attrs, VALUE rb_pair,
@@ -688,10 +688,10 @@ static VALUE rbncurs_wattr_get(VALUE dummy,VALUE win, VALUE rb_attrs, VALUE rb_p
     {
         attr_t attrs = 0;
         short  pair  = 0;
-        int return_value = wattr_get(get_window(win), &attrs, &pair, 0);
+        wattr_get(get_window(win), &attrs, &pair, 0); /* will always return true */
         rb_ary_push(rb_attrs, INT2NUM(attrs));
         rb_ary_push(rb_pair, INT2NUM(pair));
-        return INT2NUM(return_value);
+        return INT2NUM(1);
     }
 }
 #endif /* HAVE_ATTR_GET */
