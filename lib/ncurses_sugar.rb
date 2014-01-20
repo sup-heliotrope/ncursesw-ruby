@@ -57,20 +57,20 @@ module Ncurses
   module Destroy_checker; def destroyed?; @destroyed; end; end
   class WINDOW
     include Destroy_checker
-    def method_missing(name, *args)
+    def method_missing(name, *args, &block)
       name = name.to_s
       if (name[0,2] == "mv")
         test_name = name.dup
         test_name[2,0] = "w" # insert "w" after"mv"
         if (Ncurses.respond_to?(test_name))
-          return Ncurses.send(test_name, self, *args)
+          return Ncurses.send(test_name, self, *args, &block)
         end
       end
       test_name = "w" + name
       if (Ncurses.respond_to?(test_name))
-        return Ncurses.send(test_name, self, *args)
+        return Ncurses.send(test_name, self, *args, &block)
       end
-      Ncurses.send(name, self, *args)
+      Ncurses.send(name, self, *args, &block)
     end
     def respond_to?(name)
       name = name.to_s
