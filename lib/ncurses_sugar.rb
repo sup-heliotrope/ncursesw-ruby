@@ -323,11 +323,11 @@ module Ncurses
       unless target.respond_to?(:pre_Ncurses_method_missing)
         target.module_eval{
           alias pre_Ncurses_method_missing method_missing
-          def method_missing(name, *args)
+          def method_missing(name, *args, &block)
             if Ncurses.respond_to?(name)
-              Ncurses.send(name, *args)
+              Ncurses.send(name, *args, &block)
             else
-              pre_Ncurses_method_missing(name, *args)
+              pre_Ncurses_method_missing(name, *args, &block)
             end
           end
         }
