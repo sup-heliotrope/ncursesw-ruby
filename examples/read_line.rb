@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # Emacs: This is -*- ruby -*- code!
-# 
+#
 # Unfinished read_line function
 #
 # Written 2003, 2004 by Tobias Peters
@@ -33,7 +33,7 @@ def read_line(y, x,
       cursor_pos = [0, cursor_pos-1].max
       window.mvaddstr(y, x+string.length, " ")
     # when etc...
-    when " "[0]..255 # remaining printables
+    when " ".ord..255 # remaining printables
       if (cursor_pos < max_len)
         string[cursor_pos,0] = ch.chr
         cursor_pos += 1
@@ -43,8 +43,8 @@ def read_line(y, x,
     else
       Ncurses.beep
     end
-  end    	
-end    
+  end
+end
 
 if (__FILE__ == $0) then begin
   # demo mode
@@ -54,13 +54,13 @@ if (__FILE__ == $0) then begin
 
   # recognize KEY_ENTER, KEY_BACKSPACE  etc
   Ncurses.keypad(Ncurses.stdscr, true)
-  
+
   y = 10
   x = 2
   prompt = "Hallo > "
   Ncurses.mvaddstr(y,x, prompt)
   s = read_line(y, x + prompt.length)
-  
+
 ensure
   Ncurses.endwin
 end end
