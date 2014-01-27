@@ -6,7 +6,7 @@ SUMMARY = 'This wrapper provides access to the functions, macros, global variabl
 
 spec = Gem::Specification.new do |s|
   s.name        = 'ncursesw'
-  s.version     = '1.4.3'
+  s.version     = '1.4.4'
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Tobias Herzke', 'Sup developers']
   s.email       = ['sup-talk@rubyforge.org']
