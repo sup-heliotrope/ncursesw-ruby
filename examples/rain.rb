@@ -166,7 +166,7 @@ class Rain
       num_ceil
     end
   end
-    
+
   def fall(pause = 0.1)
     begin
       fall_for_a_moment
@@ -198,13 +198,13 @@ begin
 
   begin
     case(Ncurses.getch())
-    when 'q'[0], 'Q'[0]
+    when 'q'.ord, 'Q'.ord
       Ncurses.curs_set(1)
       Ncurses.endwin()
       exit
-    when 's'[0]
+    when 's'.ord
       Ncurses.stdscr.nodelay(false)
-    when ' '[0]
+    when ' '.ord
       Ncurses.stdscr.nodelay(true)
     when Ncurses::KEY_RESIZE
       Rain.sigwinch_handler
