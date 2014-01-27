@@ -5,6 +5,8 @@ library.
 (C) 2002, 2003, 2004 Tobias Peters <t-peters@users.berlios.de>
 (C) 2004 Simon Kaczor <skaczor@cox.net>
 (C) 2005 2006 Tobias Herzke <t-peters@users.berlios.de>
+(C) 2013 2014 Gaute Hope <eg@gaute.vetsj.com>
+(C) 2013 2014 Sup developers
 
 This module is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -37,7 +39,7 @@ mapped to a Ruby Module named "Ncurses": Functions and external
 variables are implemented as singleton functions of the Module
 Ncurses.
 
-This README is organized into the following parts: 
+This README is organized into the following parts:
 - Overview
 - Installation and Usage
 - External Variables
@@ -100,7 +102,7 @@ One of these external variables, ESCDELAY, is also settable with a ruby method
 (Ncurses.ESCDELAY=).
 
 Another external variable, Ncurses.RESIZEDELAY is introduced by this wrapper.
-It contains the maximum milliseconds delay with which terminal resizesings are 
+It contains the maximum milliseconds delay with which terminal resizesings are
 recognized.
 
 Constants
@@ -143,7 +145,7 @@ changes to them.
 Attention: some macro-only functions like getsyx accept variables of type int,
 but, being macros, they write values to their arguments. Thus, they also need
 empty array arguments when called from ruby.
-Example: 
+Example:
 	color_pair_number = 4
 	foreground_color  = []
 	background_color  = []
@@ -204,7 +206,7 @@ module Ncurses
 	class WINDOW; end
 	class SCREEN; end
 	class MEVENT; end
-	module Panel 
+	module Panel
 		class PANEL; end
 	end
 	module Form
@@ -267,7 +269,7 @@ The form Library
 The form library was wrapped inside the Ncurses:Form module. All
 form functions are implemented as module functions on the module
 Ncurses::Form. In addition, all function for which the first
-parameter is one of the objects are also implemented as an instance 
+parameter is one of the objects are also implemented as an instance
 method of the respective class. For example, instead of calling
 post_form(form), you can use form.post_form().
 
@@ -299,7 +301,7 @@ The menu Library
 The menu library was wrapped inside the Ncurses:Menu module. All
 menu functions are implemented as module functions in the module
 Ncurses::Menu. In addition, all functions for which the first
-parameter is one of the objects are also implemented as an instance 
+parameter is one of the objects are also implemented as an instance
 method of the respective class. For example, instead of calling
 post_menu(menu), you can use menu.post_menu().
 
@@ -330,7 +332,7 @@ However, it is used by many ncurses programs, and for this purpose,
 a wrapper for this function is also included in ncurses-ruby.
 
 The function is implemented as a module function Ncurses.ruby, and
-expects two arguments, an Integer and a String.  It returns a string. 
+expects two arguments, an Integer and a String.  It returns a string.
 The constants that can be used as the Integer argument are also wrapped
 as constants in the Ncurses module.  See the manual page for setlocale
 for documentation of this function.
