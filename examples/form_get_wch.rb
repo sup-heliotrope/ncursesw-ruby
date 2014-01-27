@@ -42,6 +42,10 @@ begin
 
   buf = ""
 
+  if not defined? Ncurses::Form.form_driver_w
+    raise NotImplementedError, "This example needs a ncurses version with the form_driver_w method"
+  end
+
   # Loop through to get user requests
   while(true) do
     ret = Ncurses.get_wch()
@@ -55,7 +59,7 @@ begin
       # If this is a normal character, it gets Printed
       #prbuf = fields[0].field_buffer 0
       ##buf = buf.force_encoding('utf-8') + [ch].pack('U')
-      #buf = prbuf + [ch].pack('U') 
+      #buf = prbuf + [ch].pack('U')
 
 
       ##buf = sbuf.force_encoding('utf-8') + [ch].pack('U')
