@@ -761,9 +761,18 @@ static VALUE rbncurs_color_set(VALUE dummy, VALUE arg1, VALUE arg2) {
     return INT2NUM(color_set(NUM2INT(arg1),  ((void)(arg2),NULL)));
 }
 #endif
+
+
+
 static VALUE rbncurs_COLOR_PAIR(VALUE dummy, VALUE arg1) {
     return INT2NUM(COLOR_PAIR(NUM2INT(arg1)));
 }
+
+// alias for COLOR_PAIR for compatibilty with ruby Curses gem.
+static VALUE rbncurs_color_pair(VALUE dummy, VALUE arg1) {
+  return rbncurs_COLOR_PAIR (dummy, arg1);
+}
+
 static VALUE rbncurs_copywin(VALUE dummy, VALUE arg1, VALUE arg2, VALUE arg3, VALUE arg4, VALUE arg5, VALUE arg6, VALUE arg7, VALUE arg8, VALUE arg9) {
     return INT2NUM(copywin(get_window(arg1),  get_window(arg2),  NUM2INT(arg3),  NUM2INT(arg4),  NUM2INT(arg5),  NUM2INT(arg6),  NUM2INT(arg7),  NUM2INT(arg8),  NUM2INT(arg9)));
 }
@@ -1808,6 +1817,7 @@ static void init_functions_2(void) {
     NCFUNC(color_set, 2);
 #endif
     NCFUNC(COLOR_PAIR, 1);
+    NCFUNC(color_pair, 1);
     NCFUNC(copywin, 9);
     NCFUNC(curs_set, 1);
     NCFUNC(def_prog_mode, 0);
