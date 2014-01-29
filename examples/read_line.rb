@@ -6,6 +6,10 @@
 # Written 2003, 2004 by Tobias Peters
 # No warranties
 # Share and enjoy!
+#
+# 2014: Updated by Gaute Hope
+# Note: This is not wide char / unicode safe - take a look at
+#       form_get_wch.rb for a better example.
 
 require "ncursesw"
 
@@ -26,7 +30,7 @@ def read_line(y, x,
       cursor_pos = [0, cursor_pos-1].max
     when Ncurses::KEY_RIGHT
       # similar, implement yourself !
-    when Ncurses::KEY_ENTER, ?\n, ?\r
+    when Ncurses::KEY_ENTER, "\n".ord
       return string, cursor_pos, ch # Which return key has been used?
     when Ncurses::KEY_BACKSPACE
       string = string[0...([0, cursor_pos-1].max)] + string[cursor_pos..-1]
@@ -38,9 +42,11 @@ def read_line(y, x,
         string[cursor_pos,0] = ch.chr
         cursor_pos += 1
       else
+        Ncurses.mvprintw(15, 10, "A: Got: #{ch.inspect} (#{[ch].pack("U")})")
         Ncurses.beep
       end
     else
+      Ncurses.mvprintw(16, 10, "B: Got: #{ch.inspect} (#{[ch].pack("U")})")
       Ncurses.beep
     end
   end
@@ -54,6 +60,7 @@ if (__FILE__ == $0) then begin
 
   # recognize KEY_ENTER, KEY_BACKSPACE  etc
   Ncurses.keypad(Ncurses.stdscr, true)
+  #Ncurses.nonl()
 
   y = 10
   x = 2
