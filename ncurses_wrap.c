@@ -75,6 +75,10 @@
 #include <time.h>
 #endif
 
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
+
 VALUE mNcurses;  /* module Ncurses */
 VALUE cWINDOW;   /* class Ncurses::WINDOW */
 VALUE cSCREEN;   /* class Ncurses::SCREEN */

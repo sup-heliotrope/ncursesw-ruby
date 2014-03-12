@@ -175,6 +175,11 @@ if have_func("clock_gettime")
   $CFLAGS += " -DHAVE_CLOCK_GETTIME"
 end
 
+# check if we have sys/time.h, should increase portability
+# https://github.com/sup-heliotrope/ncursesw-ruby/issues/25
+# http://stackoverflow.com/questions/7889678/how-can-adding-a-header-increase-portability-sys-time-h
+have_header("sys/time.h")
+
 $CXXFLAGS  = $CFLAGS
 
 create_makefile('ncursesw_bin')
