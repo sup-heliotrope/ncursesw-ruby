@@ -132,14 +132,14 @@ have_func("assume_default_colors")
 have_func("attr_get")
 
 puts "checking for the panel library..."
-if have_header("panel.h")
+if have_header("panel.h") or have_header("ncursesw/panel.h")
   have_library("panelw", "panel_hidden")
 else
   raise "panel library not found"
 end
 
 puts "checking for the form library..."
-if have_header("form.h")
+if have_header("form.h") or have_header("ncursesw/form.h")
   if not have_library("formw", "new_form")
     raise "formw library not found"
   end
@@ -152,7 +152,7 @@ if have_library("formw", "form_driver_w")
 end
 
 puts "checking for the menu library..."
-if have_header("menu.h")
+if have_header("menu.h") or have_header("ncursesw/menu.h")
   have_library("menu", "new_menu")
 else
   raise "menu library not found."
