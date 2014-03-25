@@ -152,7 +152,7 @@ if have_library("formw", "form_driver_w")
 end
 
 puts "checking for the menu library..."
-if have_header("menu.h")
+if have_header("menu.h") or have_header("ncursesw/menu.h")
   have_library("menu", "new_menu")
 else
   raise "menu library not found."
