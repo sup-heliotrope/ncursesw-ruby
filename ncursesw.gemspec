@@ -20,7 +20,7 @@ spec = Gem::Specification.new do |s|
   s.files         = [
     "Changes",
     "COPYING",
-    "README",
+    "README.md",
     "THANKS",
     "TODO",
     "examples/example.rb",
