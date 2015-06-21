@@ -25,6 +25,8 @@ require "mkmf"
 
 $CFLAGS  += " -g -Wformat -Werror=format-security -Waddress"
 
+dir_config("ncurses")
+
 have_header("unistd.h")
 have_header("locale.h")
 
