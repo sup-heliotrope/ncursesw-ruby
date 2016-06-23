@@ -25,6 +25,11 @@ require "mkmf"
 
 $CFLAGS  += " -g -Wformat -Werror=format-security -Waddress"
 
+if find_executable('pkg-config')
+  $CFLAGS  += ' ' + `pkg-config --cflags ncursesw`.strip
+  $LDFLAGS += ' ' + `pkg-config --libs ncursesw`.strip
+end
+
 dir_config("ncurses")
 
 have_header("unistd.h")
@@ -185,4 +190,3 @@ have_header("sys/time.h")
 $CXXFLAGS  = $CFLAGS
 
 create_makefile('ncursesw_bin')
-
