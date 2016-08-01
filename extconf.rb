@@ -49,6 +49,9 @@ end
 
 if have_library("ncursesw", "wmove")
   curses_lib = "ncursesw"
+elsif have_library("ncurses", "add_wch")
+  curses_lib = "ncurses"
+  curses_is_wide = true
 elsif have_library("pdcurses", "wmove")
   curses_lib = "pdcurses"
 else
@@ -147,7 +150,8 @@ end
 
 puts "checking for the form library..."
 if have_header("form.h") or have_header("ncursesw/form.h")
-  if not have_library("formw", "new_form")
+  if not have_library("formw", "new_form") ||
+      (curses_is_wide && have_library("form", "new_form"))
     raise "formw library not found"
   end
 else
