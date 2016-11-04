@@ -5,9 +5,9 @@
 # For a more rubyish approach that uses Ruby objects see form2.rb
 #
 # The original example contained the following copyright:
-# Copyright (c) 2001 by Pradeep Padala. This document may be distributed 
+# Copyright (c) 2001 by Pradeep Padala. This document may be distributed
 # under the terms set forth in the LDP license at linuxdoc.org/COPYRIGHT.html.
- 
+
 require 'ncursesw.rb'
 
 begin
@@ -20,7 +20,7 @@ begin
   fields = Array.new
   fields.push(Ncurses::Form.new_field(1,10,4,18,0,0))
   fields.push(Ncurses::Form.new_field(1,10,6,18,0,0))
-  
+
   # set field options
   Ncurses::Form.set_field_back(fields[0], Ncurses::A_UNDERLINE)
   Ncurses::Form.field_opts_off(fields[0], Ncurses::Form::O_AUTOSKIP)
@@ -29,7 +29,7 @@ begin
   Ncurses::Form.field_opts_off(fields[1], Ncurses::Form::O_AUTOSKIP)
 
 
-  # create a form  
+  # create a form
   form = Ncurses::Form.new_form(fields)
 
   # post the form and refresh the screen
@@ -49,24 +49,24 @@ begin
       # Go to the end of the present buffer
       # Leaves nicely at the last character
       Ncurses::Form.form_driver(form, Ncurses::Form::REQ_END_LINE)
-      
+
     when Ncurses::KEY_UP
       #Go to previous field
       Ncurses::Form.form_driver(form, Ncurses::Form::REQ_PREV_FIELD)
       Ncurses::Form.form_driver(form, Ncurses::Form::REQ_END_LINE);
-    else                                                                   
+    else
       # If this is a normal character, it gets Printed
       Ncurses::Form.form_driver(form, ch)
     end
   end
-    
+
   # unpost and free form
   Ncurses::Form.unpost_form(form);
   Ncurses::Form.free_form(form)
   Ncurses::Form.free_field(fields[0]);
   Ncurses::Form.free_field(fields[1]);
 
-  
+
   #using class methods this time
 #  form = Ncurses::Form::FORM.new(fields)
 #  puts "Created form: #{form.inspect}\n"

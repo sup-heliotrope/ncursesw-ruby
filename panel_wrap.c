@@ -2,7 +2,7 @@
  * ncurses-ruby is a ruby module for accessing the FSF's ncurses library
  * (C) 2002 Tobias Peters <t-peters@berlios.de>
  * (C) 2011 Tobias Herzke
- * 
+ *
  *  This module is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
@@ -163,7 +163,7 @@ void init_panel(void)
                                1);
     rb_define_method(cPANEL, "hide_panel",
                      (&rbncurs_c_hide_panel), 0);
-    
+
     rb_define_method(cPANEL, "hide",
                      (&rbncurs_c_hide_panel), 0);
     rb_define_singleton_method(mPanel, "show_panel",
@@ -171,14 +171,14 @@ void init_panel(void)
                                1);
     rb_define_method(cPANEL, "show_panel",
                      (&rbncurs_c_show_panel), 0);
-    
+
     rb_define_method(cPANEL, "show",
                      (&rbncurs_c_show_panel), 0);
     rb_define_singleton_method(mPanel, "top_panel",
                                (&rbncurs_m_top_panel), 1);
     rb_define_method(cPANEL, "top_panel",
                      (&rbncurs_c_top_panel), 0);
-    
+
     rb_define_method(cPANEL, "top",
                      (&rbncurs_c_top_panel), 0);
     rb_define_singleton_method(mPanel, "bottom_panel",
@@ -186,7 +186,7 @@ void init_panel(void)
                                1);
     rb_define_method(cPANEL, "bottom_panel",
                      (&rbncurs_c_bottom_panel), 0);
-    
+
     rb_define_method(cPANEL, "bottom",
                      (&rbncurs_c_bottom_panel), 0);
     rb_define_singleton_method(mPanel, "new_panel",
@@ -229,7 +229,7 @@ void init_panel(void)
     rb_define_method(cPANEL, "panel_userptr",
                      (&rbncurs_c_panel_userptr),
                      0);
-    rb_define_method(cPANEL, "userptr",                
+    rb_define_method(cPANEL, "userptr",
                      (&rbncurs_c_panel_userptr),
                      0);
     rb_define_singleton_method(mPanel, "move_panel",

@@ -1,10 +1,10 @@
 /*
  * This is a curses menu wrapper as part of ncurses-ruby.
- * It borrows heavily from form_wrap.h. 
+ * It borrows heavily from form_wrap.h.
  * Contributed by Earle Clubb <eclubb@valcom.com>
  * Valcom Inc. <http://www.valcom.com>
  * Copyright 2007
- * 
+ *
  *  This module is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either

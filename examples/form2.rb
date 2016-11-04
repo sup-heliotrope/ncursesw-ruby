@@ -3,12 +3,12 @@
 # Simple example of a form in action, based on the NCURSES Programming HOWTO:
 # http://www.tldp.org/HOWTO/NCURSES-Programming-HOWTO/
 #
-# All standard field types are created in the form. 
-# Additionnally a custom field is created to illustrate 
+# All standard field types are created in the form.
+# Additionnally a custom field is created to illustrate
 # custom field validation using Ruby Proc objects, as shown in the example.
 #
 # The original example contained the following copyright:
-# Copyright (c) 2001 by Pradeep Padala. This document may be distributed 
+# Copyright (c) 2001 by Pradeep Padala. This document may be distributed
 # under the terms set forth in the LDP license at linuxdoc.org/COPYRIGHT.html.
 
 require 'ncursesw'
@@ -44,20 +44,20 @@ end
 
 fields = Array.new
 
-states = {"MI" => "Michigan", 
-          "VA" => "Virginia", 
+states = {"MI" => "Michigan",
+          "VA" => "Virginia",
           "VE" => "Vermont"}
-fieldcheck = proc { |afield| 
+fieldcheck = proc { |afield|
   val = afield.field_buffer(0)
   val.strip!
-  if (states[val] != nil) 
+  if (states[val] != nil)
     afield.set_field_buffer(0,states[val])
     return true
   else
     return false
   end
 }
-charcheck = proc { |ch| 
+charcheck = proc { |ch|
   if (('A'..'Z').include?(ch))
     return true
   else
@@ -73,7 +73,7 @@ begin
   Ncurses.noecho();
   Ncurses.keypad(stdscr, true);
 
-  # Initialize few color pairs 
+  # Initialize few color pairs
   Ncurses.init_pair(1, COLOR_RED, COLOR_BLACK);
   Ncurses.init_pair(2, COLOR_BLACK, COLOR_WHITE);
   Ncurses.init_pair(3, COLOR_BLACK, COLOR_BLUE);
@@ -108,7 +108,7 @@ begin
   cols = Array.new()
   my_form.scale_form(rows, cols);
 
-  # Create the window to be associated with the form 
+  # Create the window to be associated with the form
   my_form_win = WINDOW.new(rows[0] + 3, cols[0] + 14, 1, 1);
   my_form_win.bkgd(Ncurses.COLOR_PAIR(3));
   my_form_win.keypad(TRUE);
@@ -133,7 +133,7 @@ begin
   my_form_win.mvaddstr(16, 2, "Regexp")
   my_form_win.mvaddstr(18, 2, "IP")
   my_form_win.mvaddstr(20, 2, "Custom")
-  
+
   my_form_win.wrefresh();
 
   stdscr.mvprintw(Ncurses.LINES - 2, 28, "Use UP, DOWN arrow keys to switch between fields");
@@ -150,7 +150,7 @@ begin
       # Go to the end of the present buffer
       # Leaves nicely at the last character
       my_form.form_driver(REQ_END_LINE);
-      
+
     when KEY_UP
       # Go to previous field
       my_form.form_driver(REQ_VALIDATION);
@@ -168,7 +168,7 @@ begin
     when KEY_BACKSPACE
       my_form.form_driver(REQ_DEL_PREV);
     else
-      # If this is a normal character, it gets Printed    
+      # If this is a normal character, it gets Printed
       my_form.form_driver(ch);
     end
   end
