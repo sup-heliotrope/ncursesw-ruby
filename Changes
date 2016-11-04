@@ -1,3 +1,22 @@
+ncurses-ruby-1.4.10
+* Auto detection of ncurses vs ncursesw installation.
+* Added --with-ncurses-dir={path} option to specify location for libs and
+  include files.
+
+ncurses-ruby-1.4.9
+* (Updated readme, mailing list, etc.)
+
+ncurses-ruby-1.4.8
+* (bug fixes)
+
+ncurses-ruby-1.4.7
+* (bug fixes)
+
+
+
+
+--- (Changes were not maintained beyond this point) ---
+
 ncurses-ruby-1.1
 * Bugfixes by T. Sutherland in _tracef and _tracedump.
 
