@@ -25,7 +25,21 @@ require "mkmf"
 
 $CFLAGS  += " -g -Wformat -Werror=format-security -Waddress"
 
-if find_executable('pkg-config')
+if find_executable("pkg-config")
+  # Apple platform workaround
+  if RUBY_PLATFORM =~ /darwin/ && `pkg-config ncurses --variable=libdir`.chop == "/usr/lib"
+    if (ncurses_env = `brew --env --plain ncurses 2>/dev/null`) && $CHILD_STATUS.success?
+      pkg_config_path = ENV.fetch("PKG_CONFIG_PATH", "").split(":")
+      ncurses_env.split("\n").find{ |x| x =~ /^PKG_CONFIG_PATH :(.+)/ }
+      pkg_config_path << $LAST_PAREN_MATCH
+      ENV["PKG_CONFIG_PATH"] = pkg_config_path.join(":")
+    else
+      exit_failure <<~MSG
+      macOS ships useless ncurses headers and pkg-config files without /usr/lib/libncurses.5.4.dylib.
+      Run `brew install ncurses` or append a valid location to PKG_CONFIG_PATH and try again.
+      MSG
+    end
+  end
   $CFLAGS  += ' ' + `pkg-config --cflags ncursesw`.strip
   $LDFLAGS += ' ' + `pkg-config --libs ncursesw`.strip
 end
