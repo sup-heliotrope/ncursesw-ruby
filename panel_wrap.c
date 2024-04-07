@@ -135,6 +135,7 @@ void init_panel(void)
     mPanel = rb_define_module_under(mNcurses, "Panel");
     rb_iv_set(mPanel, "@panels_hash", rb_hash_new());
     cPANEL  = rb_define_class_under(mPanel, "PANEL", rb_cObject);
+    rb_undef_alloc_func(cPANEL);
     rb_define_singleton_method(mPanel, "del_panel",
                                (&rbncurs_m_del_panel),
                                1);

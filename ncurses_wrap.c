@@ -2865,7 +2865,9 @@ void Init_ncursesw_bin(void)
     rb_iv_set(mNcurses, "@infd", Qnil);
 
     cWINDOW  = rb_define_class_under(mNcurses, "WINDOW", rb_cObject);
+    rb_undef_alloc_func(cWINDOW);
     cSCREEN  = rb_define_class_under(mNcurses, "SCREEN", rb_cObject);
+    rb_undef_alloc_func(cSCREEN);
     init_constants_1();
     init_constants_2();
     init_constants_3();

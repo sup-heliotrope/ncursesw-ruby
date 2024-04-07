@@ -1074,6 +1074,7 @@ void init_menu(void)
   /* Menus */
   rb_iv_set(mMenu, "@menus_hash", rb_hash_new());
   cMENU  = rb_define_class_under(mMenu, "MENU", rb_cObject);
+  rb_undef_alloc_func(cMENU);
   rb_define_singleton_method(cMENU, "new", (&rbncurs_m_new_menu), 1);
 
   RB_CLASS_METH(cMENU, NULL, current_item, 0);
@@ -1127,6 +1128,7 @@ void init_menu(void)
   /* Items */
   rb_iv_set(mMenu, "@items_hash", rb_hash_new());
   cITEM = rb_define_class_under(mMenu, "ITEM", rb_cObject);
+  rb_undef_alloc_func(cITEM);
   rb_define_singleton_method(cITEM, "new", (&rbncurs_m_new_item), 2);
 
   RB_CLASS_METH(cITEM, "free", free_item, 0);

@@ -1367,6 +1367,7 @@ void init_form(void)
   /* Forms */
   rb_iv_set(mForm, "@forms_hash", rb_hash_new());
   cFORM  = rb_define_class_under(mForm, "FORM", rb_cObject);
+  rb_undef_alloc_func(cFORM);
   rb_define_singleton_method(cFORM, "new",
 									  (&rbncurs_m_new_form),
 									  1);
@@ -1413,6 +1414,7 @@ void init_form(void)
   /* Fields */
   rb_iv_set(mForm, "@fields_hash", rb_hash_new());
   cFIELD = rb_define_class_under(mForm, "FIELD", rb_cObject);
+  rb_undef_alloc_func(cFIELD);
   rb_define_singleton_method(cFIELD, "new",
 									  (&rbncurs_m_new_field),
 									  6);
@@ -1454,6 +1456,7 @@ void init_form(void)
   /* Field types */
   rb_iv_set(mForm, "@fieldtypes_hash", rb_hash_new());
   cFIELDTYPE = rb_define_class_under(mForm, "FIELDTYPE", rb_cObject);
+  rb_undef_alloc_func(cFIELDTYPE);
   rb_define_singleton_method(cFIELDTYPE, "new",
 									  (&rbncurs_m_new_fieldtype),
 									  2);
