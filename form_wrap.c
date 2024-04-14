@@ -1421,16 +1421,16 @@ void init_form(void)
   RB_CLASS_METH(cFIELD, "dup", dup_field,2);
   RB_CLASS_METH(cFIELD, "dynamic_info", dynamic_field_info,3);
   RB_CLASS_METH(cFIELD, "arg", field_arg,0);
-  RB_CLASS_METH(cFIELD, "back", field_back,1);
+  RB_CLASS_METH(cFIELD, "back", field_back,0);
   RB_CLASS_METH(cFIELD, "buffer", field_buffer,1);
-  RB_CLASS_METH(cFIELD, "fore", field_fore,1);
+  RB_CLASS_METH(cFIELD, "fore", field_fore,0);
   RB_CLASS_METH(cFIELD, "index", field_index,0);
   RB_CLASS_METH(cFIELD, "info", field_info,6);
   RB_CLASS_METH(cFIELD, "just", field_just,0);
   RB_CLASS_METH(cFIELD, "opts", field_opts,0);
   RB_CLASS_METH(cFIELD, "opts_off", field_opts_off,1);
   RB_CLASS_METH(cFIELD, "opts_on", field_opts_on,1);
-  RB_CLASS_METH(cFIELD, "pad", field_pad,1);
+  RB_CLASS_METH(cFIELD, "pad", field_pad,0);
   RB_CLASS_METH(cFIELD, "status", field_status,0);
   RB_CLASS_METH(cFIELD, "type", field_type,0);
   /*   RB_CLASS_METH(cFIELD, "userptr", field_userptr,0); */

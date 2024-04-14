@@ -100,11 +100,11 @@ static VALUE rbncurs_m_new_panel(VALUE dummy, VALUE rb_window)
 { return rbncurs_c_new_panel(rb_window); }
 static VALUE rbncurs_c_panel_above(VALUE rb_panel)
 { return wrap_panel(panel_above(get_panel(rb_panel))); }
-static VALUE rbncurs_m_panel_above(VALUE rb_panel)
+static VALUE rbncurs_m_panel_above(VALUE dummy, VALUE rb_panel)
 { return rbncurs_c_panel_above(rb_panel); }
 static VALUE rbncurs_c_panel_below(VALUE rb_panel)
 { return wrap_panel(panel_below(get_panel(rb_panel))); }
-static VALUE rbncurs_m_panel_below(VALUE rb_panel)
+static VALUE rbncurs_m_panel_below(VALUE dummy, VALUE rb_panel)
 { return rbncurs_c_panel_below(rb_panel); }
 static VALUE rbncurs_c_set_panel_userptr(VALUE rb_panel, VALUE userptr)
 { return INT2NUM(set_panel_userptr(get_panel(rb_panel),

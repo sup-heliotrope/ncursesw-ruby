@@ -2592,7 +2592,7 @@ static void init_functions_3(void)
 #ifdef HAVE_WENCLOSE
     rb_define_module_function(mNcurses, "wenclose?",
                               (&rbncurs_wenclose),
-                              1);
+                              3);
 #endif
 #ifdef HAVE_MOUSEINTERVAL
     NCFUNC(mouseinterval, 1);
@@ -2606,7 +2606,7 @@ static void init_functions_3(void)
 #ifdef HAVE_HAS_KEY
     rb_define_module_function(mNcurses, "has_key?",
                               (&rbncurs_has_key),
-                              2);
+                              1);
 #endif
     NCFUNC(getyx, 3);
     NCFUNC(getbegyx, 3);
