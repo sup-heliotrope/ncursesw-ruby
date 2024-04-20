@@ -1,3 +1,7 @@
+ncurses-ruby-1.4.11
+ * Fixed some incorrectly declared method arguments.
+ * Fixed warnings about "undefining the allocator of T_DATA class".
+
 ncurses-ruby-1.4.10
  * Auto detection of ncurses vs ncursesw installation.
  * Added --with-ncurses-dir={path} option to specify location for libs and
