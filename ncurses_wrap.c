@@ -233,6 +233,7 @@ VALUE   wrap_window(WINDOW* window)
         if (rb_window == Qnil) {
             rb_window = Data_Wrap_Struct(cWINDOW, 0, 0, window);
             rb_iv_set(rb_window, "@destroyed", Qfalse);
+            rb_iv_set(rb_window, "@timeout", INT2FIX(-1));
             rb_hash_aset(windows_hash, window_adress, rb_window);
         }
         return rb_window;
@@ -838,16 +839,11 @@ static VALUE rbncurs_getbkgd(VALUE dummy, VALUE arg1) {
 typedef int (*wgetch_func) (WINDOW *);
 
 /* functor for getting a char nonblocking, pass getchar function */
-static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_func) {
+static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_func, int windelay) {
     /* nonblocking wgetch only implemented for Ncurses */
     int halfdelay = NUM2INT(rb_iv_get(mNcurses, "@halfdelay"));
     int infd = NUM2INT(rb_iv_get(mNcurses, "@infd"));
     double screen_delay = halfdelay * 0.1;
-#if defined(NCURSES_VERSION) && defined(NCURSES_OPAQUE) && !NCURSES_OPAQUE
-    int windelay = c_win->_delay;
-#else
-    int windelay = 0;
-#endif
     double window_delay = (windelay >= 0) ? 0.001 * windelay : (1e200*1e200);
     /* FIXME:                                                  ^ Infinity ^*/
     double delay = (screen_delay > 0) ? screen_delay : window_delay;
@@ -867,9 +863,7 @@ static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_f
     starttime = tv.tv_sec + tv.tv_usec * 1e-6;
 #endif
     finishtime = starttime + delay;
-#if defined(NCURSES_VERSION) && defined(NCURSES_OPAQUE) && !NCURSES_OPAQUE
-    c_win->_delay = 0;
-#endif
+    wtimeout(c_win, 0);
     while (doupdate() /* detects resize */, (result = _wgetch_func(c_win)) == ERR) {
 #ifdef HAVE_RB_THREAD_FD_SELECT
       rb_fdset_t fdsets[3];
@@ -922,15 +916,13 @@ static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_f
 #endif
 #endif
     }
-#if defined(NCURSES_VERSION) && defined(NCURSES_OPAQUE) && !NCURSES_OPAQUE
-    c_win->_delay = windelay;
-#endif
+    wtimeout(c_win, windelay);
     return result;
 }
 
 /* non-wide char getch */
-static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win) {
-  return rbncurshelper_do_wgetch_functor (c_win, &wgetch);
+static int rbncurshelper_nonblocking_wgetch(WINDOW *c_win, int windelay) {
+  return rbncurshelper_do_wgetch_functor (c_win, &wgetch, windelay);
 }
 
 #ifdef HAVE_GET_WCH
@@ -942,20 +934,22 @@ static int my_wget_wch (WINDOW *c_win) {
 
 /* return array with first element being return key code status,
  * and second element the key code */
-static VALUE rbncurshelper_nonblocking_wget_wch(WINDOW *c_win) {
-  int retcode = rbncurshelper_do_wgetch_functor (c_win, &my_wget_wch);
+static VALUE rbncurshelper_nonblocking_wget_wch(WINDOW *c_win, int windelay) {
+  int retcode = rbncurshelper_do_wgetch_functor (c_win, &my_wget_wch, windelay);
   VALUE r = rb_assoc_new (INT2NUM(retcode), LONG2NUM(wget_wch_back));
   return r;
 }
 #endif
 
 static VALUE rbncurs_getch(VALUE dummy) {
-    return INT2NUM(rbncurshelper_nonblocking_wgetch(stdscr));
+    int windelay = NUM2INT(rb_iv_get(get_stdscr(), "@timeout"));
+    return INT2NUM(rbncurshelper_nonblocking_wgetch(stdscr, windelay));
 }
 
 #ifdef HAVE_GET_WCH
 static VALUE rbncurs_get_wch(VALUE dummy) {
-    return rbncurshelper_nonblocking_wget_wch(stdscr);
+    int windelay = NUM2INT(rb_iv_get(get_stdscr(), "@timeout"));
+    return rbncurshelper_nonblocking_wget_wch(stdscr, windelay);
 }
 #endif
 
@@ -1191,9 +1185,10 @@ static VALUE rbncurs_mvderwin(VALUE dummy, VALUE arg1, VALUE arg2, VALUE arg3) {
     return INT2NUM(mvderwin(get_window(arg1),  NUM2INT(arg2),  NUM2INT(arg3)));
 }
 static VALUE rbncurs_mvgetch(VALUE dummy, VALUE arg1, VALUE arg2) {
+    int windelay = NUM2INT(rb_iv_get(get_stdscr(), "@timeout"));
     if (wmove(stdscr, NUM2INT(arg1),  NUM2INT(arg2)) == ERR)
         return INT2NUM(ERR);
-    return INT2NUM(rbncurshelper_nonblocking_wgetch(stdscr));
+    return INT2NUM(rbncurshelper_nonblocking_wgetch(stdscr, windelay));
 }
 #ifdef HAVE_MVHLINE
 static VALUE rbncurs_mvhline(VALUE dummy, VALUE arg1, VALUE arg2, VALUE arg3, VALUE arg4) {
@@ -1253,9 +1248,10 @@ static VALUE rbncurs_mvwdelch(VALUE dummy, VALUE arg1, VALUE arg2, VALUE arg3) {
 }
 static VALUE rbncurs_mvwgetch(VALUE dummy, VALUE arg1, VALUE arg2, VALUE arg3) {
     WINDOW * c_win = get_window(arg1);
+    int windelay = NUM2INT(rb_iv_get(arg1, "@timeout"));
     if (wmove(c_win, NUM2INT(arg1),  NUM2INT(arg2)) == ERR)
         return INT2NUM(ERR);
-    return INT2NUM(rbncurshelper_nonblocking_wgetch(c_win));
+    return INT2NUM(rbncurshelper_nonblocking_wgetch(c_win, windelay));
 }
 #ifdef HAVE_MVWHLINE
 static VALUE rbncurs_mvwhline(VALUE dummy, VALUE arg1, VALUE arg2, VALUE arg3, VALUE arg4, VALUE arg5) {
@@ -1298,7 +1294,12 @@ static VALUE rbncurs_nocbreak(VALUE dummy) {
     return INT2NUM(rbncurshelper_halfdelay_cbreak(0, 0));
 }
 static VALUE rbncurs_nodelay(VALUE dummy, VALUE arg1, VALUE arg2) {
-    return INT2NUM(nodelay(get_window(arg1),  RTEST(arg2)));
+    bool flag = RTEST(arg2);
+    int return_value = nodelay(get_window(arg1), flag);
+    if (return_value != ERR) {
+        rb_iv_set(arg1, "@timeout", INT2FIX(flag ? 0 : -1));
+    }
+    return INT2NUM(return_value);
 }
 static VALUE rbncurs_noecho(VALUE dummy) {
     return INT2NUM(noecho());
@@ -1498,6 +1499,7 @@ static VALUE rbncurs_tigetstr(VALUE dummy, VALUE arg1) {
 }
 #endif
 static VALUE rbncurs_timeout(VALUE dummy, VALUE arg1) {
+    rb_iv_set(get_stdscr(), "@timeout", arg1);
     return ((timeout(NUM2INT(arg1))),Qnil);
 }
 static VALUE rbncurs_typeahead(VALUE dummy, VALUE arg1) {
@@ -1603,12 +1605,14 @@ static VALUE rbncurs_werase(VALUE dummy, VALUE arg1) {
     return INT2NUM(werase(get_window(arg1)));
 }
 static VALUE rbncurs_wgetch(VALUE dummy, VALUE arg1) {
-    return INT2NUM(rbncurshelper_nonblocking_wgetch(get_window(arg1)));
+    int windelay = NUM2INT(rb_iv_get(arg1, "@timeout"));
+    return INT2NUM(rbncurshelper_nonblocking_wgetch(get_window(arg1), windelay));
 }
 
 #ifdef HAVE_GET_WCH
 static VALUE rbncurs_wget_wch(VALUE dummy, VALUE arg1) {
-    return rbncurshelper_nonblocking_wget_wch(get_window(arg1));
+    int windelay = NUM2INT(rb_iv_get(arg1, "@timeout"));
+    return rbncurshelper_nonblocking_wget_wch(get_window(arg1), windelay);
 }
 #endif
 
@@ -1664,6 +1668,7 @@ static VALUE rbncurs_wsyncup(VALUE dummy, VALUE arg1) {
     return ((wsyncup(get_window(arg1))),Qnil);
 }
 static VALUE rbncurs_wtimeout(VALUE dummy, VALUE arg1, VALUE arg2) {
+    rb_iv_set(arg1, "@timeout", arg2);
     return ((wtimeout(get_window(arg1),  NUM2INT(arg2))),Qnil);
 }
 static VALUE rbncurs_wtouchln(VALUE dummy, VALUE arg1, VALUE arg2, VALUE arg3, VALUE arg4) {
