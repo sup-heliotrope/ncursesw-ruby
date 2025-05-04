@@ -146,9 +146,9 @@ init_constants_1(void)
 #endif
 }
 
-static VALUE rbncurs_COLORS()
+static VALUE rbncurs_COLORS(VALUE self)
 {return INT2NUM(COLORS);}
-static VALUE rbncurs_COLOR_PAIRS()
+static VALUE rbncurs_COLOR_PAIRS(VALUE self)
 {return INT2NUM(COLOR_PAIRS);}
 
 static
@@ -371,7 +371,7 @@ init_functions_0(void)
     NCFUNC(wgetnstr, 3);
 }
 
-static VALUE get_stdscr()
+static VALUE get_stdscr(VALUE self)
 {
     VALUE rb_stdscr = rb_iv_get(mNcurses, "@stdscr");
     if (rb_stdscr == Qnil) {
@@ -380,7 +380,7 @@ static VALUE get_stdscr()
     }
     return rb_stdscr;
 }
-static VALUE get_curscr()
+static VALUE get_curscr(VALUE self)
 {
     VALUE rb_curscr = rb_iv_get(mNcurses, "@curscr");
     if (rb_curscr == Qnil) {
@@ -390,7 +390,7 @@ static VALUE get_curscr()
     return rb_curscr;
 }
 #ifdef HAVE_NEWSCR
-static VALUE get_newscr()
+static VALUE get_newscr(VALUE self)
 {
     VALUE rb_newscr = rb_iv_get(mNcurses, "@newscr");
     if (rb_newscr == Qnil) {
@@ -400,15 +400,15 @@ static VALUE get_newscr()
     return rb_newscr;
 }
 #endif
-static VALUE get_LINES()   {return INT2NUM(LINES);}
-static VALUE get_COLS()    {return INT2NUM(COLS);}
+static VALUE get_LINES(VALUE self)   {return INT2NUM(LINES);}
+static VALUE get_COLS(VALUE self)    {return INT2NUM(COLS);}
 #ifdef HAVE_TABSIZE
-static VALUE get_TABSIZE() {return INT2NUM(TABSIZE);}
+static VALUE get_TABSIZE(VALUE self) {return INT2NUM(TABSIZE);}
 #endif
 #ifdef HAVE_ESCDELAY
 /* This global was an undocumented feature under AIX curses. */
 /* ESC expire time in milliseconds                           */
-static VALUE get_ESCDELAY(){return INT2NUM(ESCDELAY);}
+static VALUE get_ESCDELAY(VALUE self){return INT2NUM(ESCDELAY);}
 static VALUE set_ESCDELAY(VALUE dummy, VALUE new_delay)
 {
     ESCDELAY=NUM2INT(new_delay);
@@ -419,7 +419,7 @@ static VALUE set_ESCDELAY(VALUE dummy, VALUE new_delay)
 /* This global is wrapper-specific. It denotes the interval after which the
    terminal is periodically checked for having resized or not. */
 /* time in milliseconds                           */
-static VALUE get_RESIZEDELAY(){return rb_iv_get(mNcurses, "@resize_delay");}
+static VALUE get_RESIZEDELAY(VALUE self){return rb_iv_get(mNcurses, "@resize_delay");}
 static VALUE set_RESIZEDELAY(VALUE dummy, VALUE rb_new_delay)
 {
     int c_new_delay = NUM2INT(rb_new_delay);
@@ -480,7 +480,7 @@ static VALUE rbncurs_keybound(VALUE dummy, VALUE keycode, VALUE count)
 }
 #endif
 #ifdef HAVE_CURSES_VERSION
-static VALUE rbncurs_curses_version(){return rb_str_new2(curses_version());}
+static VALUE rbncurs_curses_version(VALUE self){return rb_str_new2(curses_version());}
 #endif
 #ifdef HAVE_DEFINE_KEY
 static VALUE rbncurs_define_key(VALUE dummy, VALUE definition, VALUE keycode)
@@ -504,7 +504,7 @@ static VALUE rbncurs_resizeterm(VALUE dummy, VALUE lines, VALUE columns)
 }
 #endif
 #ifdef HAVE_USE_DEFAULT_COLORS
-static VALUE rbncurs_use_default_colors()
+static VALUE rbncurs_use_default_colors(VALUE klass)
 {
     return INT2NUM(use_default_colors());
 }
@@ -849,7 +849,7 @@ static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_f
     double delay = (screen_delay > 0) ? screen_delay : window_delay;
     int result;
     double starttime, nowtime, finishtime;
-    double resize_delay = NUM2INT(get_RESIZEDELAY()) / 1000.0;
+    double resize_delay = NUM2INT(get_RESIZEDELAY(mNcurses)) / 1000.0;
     fd_set in_fds;
 #ifdef HAVE_CLOCK_GETTIME
     struct timespec tv;
@@ -942,13 +942,13 @@ static VALUE rbncurshelper_nonblocking_wget_wch(WINDOW *c_win, int windelay) {
 #endif
 
 static VALUE rbncurs_getch(VALUE dummy) {
-    int windelay = NUM2INT(rb_iv_get(get_stdscr(), "@timeout"));
+    int windelay = NUM2INT(rb_iv_get(get_stdscr(dummy), "@timeout"));
     return INT2NUM(rbncurshelper_nonblocking_wgetch(stdscr, windelay));
 }
 
 #ifdef HAVE_GET_WCH
 static VALUE rbncurs_get_wch(VALUE dummy) {
-    int windelay = NUM2INT(rb_iv_get(get_stdscr(), "@timeout"));
+    int windelay = NUM2INT(rb_iv_get(get_stdscr(dummy), "@timeout"));
     return rbncurshelper_nonblocking_wget_wch(stdscr, windelay);
 }
 #endif
@@ -1185,7 +1185,7 @@ static VALUE rbncurs_mvderwin(VALUE dummy, VALUE arg1, VALUE arg2, VALUE arg3) {
     return INT2NUM(mvderwin(get_window(arg1),  NUM2INT(arg2),  NUM2INT(arg3)));
 }
 static VALUE rbncurs_mvgetch(VALUE dummy, VALUE arg1, VALUE arg2) {
-    int windelay = NUM2INT(rb_iv_get(get_stdscr(), "@timeout"));
+    int windelay = NUM2INT(rb_iv_get(get_stdscr(dummy), "@timeout"));
     if (wmove(stdscr, NUM2INT(arg1),  NUM2INT(arg2)) == ERR)
         return INT2NUM(ERR);
     return INT2NUM(rbncurshelper_nonblocking_wgetch(stdscr, windelay));
@@ -1499,7 +1499,7 @@ static VALUE rbncurs_tigetstr(VALUE dummy, VALUE arg1) {
 }
 #endif
 static VALUE rbncurs_timeout(VALUE dummy, VALUE arg1) {
-    rb_iv_set(get_stdscr(), "@timeout", arg1);
+    rb_iv_set(get_stdscr(dummy), "@timeout", arg1);
     return ((timeout(NUM2INT(arg1))),Qnil);
 }
 static VALUE rbncurs_typeahead(VALUE dummy, VALUE arg1) {
