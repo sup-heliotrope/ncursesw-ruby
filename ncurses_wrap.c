@@ -504,7 +504,7 @@ static VALUE rbncurs_resizeterm(VALUE dummy, VALUE lines, VALUE columns)
 }
 #endif
 #ifdef HAVE_USE_DEFAULT_COLORS
-static VALUE rbncurs_use_default_colors(VALUE klass)
+static VALUE rbncurs_use_default_colors(VALUE self)
 {
     return INT2NUM(use_default_colors());
 }
