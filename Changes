@@ -1,3 +1,6 @@
+ncurses-ruby-1.4.13
+ * Fixed compilation errors under C23 due to unprototyped functions.
+
 ncurses-ruby-1.4.12
  * Fixed getch non-blocking behaviour with NCURSES_OPAQUE.
 
