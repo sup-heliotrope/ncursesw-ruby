@@ -1495,7 +1495,9 @@ static VALUE rbncurs_tigetnum(VALUE dummy, VALUE arg1) {
 #endif
 #ifdef HAVE_TIGETSTR
 static VALUE rbncurs_tigetstr(VALUE dummy, VALUE arg1) {
-    return rb_str_new2(tigetstr(STR2CSTR(arg1)));
+    char * str = tigetstr(STR2CSTR(arg1));
+    if (str == NULL || str == (char *)-1) return Qnil;
+    return rb_str_new2(str);
 }
 #endif
 static VALUE rbncurs_timeout(VALUE dummy, VALUE arg1) {
