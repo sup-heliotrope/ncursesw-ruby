@@ -2377,7 +2377,7 @@ static VALUE rbncurs_mousemask(VALUE dummy, VALUE rb_newmask, VALUE rb_oldmask)
 #ifdef HAVE_WENCLOSE
 static VALUE rbncurs_wenclose(VALUE dummy, VALUE rb_win, VALUE rb_y, VALUE rb_x)
 {
-    return wenclose(get_window(rb_win), NUM2INT(rb_y), NUM2INT(rb_y))
+    return wenclose(get_window(rb_win), NUM2INT(rb_y), NUM2INT(rb_x))
         ? Qtrue : Qfalse;
 }
 #endif
