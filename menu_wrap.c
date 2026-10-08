@@ -664,7 +664,9 @@ static VALUE rbncurs_m_menu_opts(VALUE dummy, VALUE rb_menu)
  */
 static VALUE rbncurs_c_menu_request_name(VALUE request)
 {
-  return rb_str_new2(menu_request_name(NUM2INT(request)));
+  char *str = menu_request_name(NUM2INT(request));
+  if (str == NULL) return Qnil;
+  return rb_str_new2(str);
 }
 static VALUE rbncurs_m_menu_request_name(VALUE dummy, VALUE request)
 { return rbncurs_c_menu_request_name(request); }

@@ -763,7 +763,9 @@ static VALUE rbncurs_m_set_field_buffer(VALUE dummy, VALUE rb_field, VALUE buf, 
 
 static VALUE rbncurs_c_field_buffer(VALUE rb_field, VALUE buffer) {
   FIELD* field = get_field(rb_field);
-  return rb_str_new2(field_buffer(field, NUM2INT(buffer)));
+  char * str = field_buffer(field, NUM2INT(buffer));
+  if (str == NULL) return Qnil;
+  return rb_str_new2(str);
 }
 static VALUE rbncurs_m_field_buffer(VALUE dummy, VALUE rb_field, VALUE buffer)
 { return rbncurs_c_field_buffer(rb_field, buffer); }
@@ -1060,7 +1062,9 @@ static VALUE rbncurs_m_form_opts(VALUE dummy, VALUE rb_form)
  * form_requestname
  */
 static VALUE rbncurs_c_form_request_name(VALUE request) {
-  return rb_str_new2(form_request_name(NUM2INT(request)));
+  char * str = form_request_name(NUM2INT(request));
+  if (str == NULL) return Qnil;
+  return rb_str_new2(str);
 }
 static VALUE rbncurs_m_form_request_name(VALUE dummy, VALUE request)
 { return rbncurs_c_form_request_name(request); }

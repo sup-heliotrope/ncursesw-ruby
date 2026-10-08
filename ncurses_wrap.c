@@ -1126,7 +1126,9 @@ static VALUE rbncurs_is_wintouched(VALUE dummy, VALUE arg1) {
     return (is_wintouched(get_window(arg1))) ? Qtrue : Qfalse;
 }
 static VALUE rbncurs_keyname(VALUE dummy, VALUE arg1) {
-    return rb_str_new2(keyname(NUM2INT(arg1)));
+    const char * str = keyname(NUM2INT(arg1));
+    if (str == NULL) return Qnil;
+    return rb_str_new2(str);
 }
 static VALUE rbncurs_keypad(VALUE dummy, VALUE arg1, VALUE arg2) {
     return INT2NUM(keypad(get_window(arg1),  RTEST(arg2)));
@@ -1442,7 +1444,9 @@ static VALUE rbncurs_slk_init(VALUE dummy, VALUE arg1) {
     return INT2NUM(slk_init(NUM2INT(arg1)));
 }
 static VALUE rbncurs_slk_label(VALUE dummy, VALUE arg1) {
-    return rb_str_new2(slk_label(NUM2INT(arg1)));
+    char * str = slk_label(NUM2INT(arg1));
+    if (str == NULL) return Qnil;
+    return rb_str_new2(str);
 }
 static VALUE rbncurs_slk_noutrefresh(VALUE dummy) {
     return INT2NUM(slk_noutrefresh());
@@ -2839,7 +2843,11 @@ void init_SCREEN_methods(void)
 
 #ifdef HAVE_LOCALE_H
 static VALUE rbncurs_setlocale(VALUE dummy, VALUE category, VALUE locale)
-{   return rb_str_new2(setlocale(NUM2INT(category), STR2CSTR(locale)));}
+{
+    char * str = setlocale(NUM2INT(category), STR2CSTR(locale));
+    if (str == NULL) return Qnil;
+    return rb_str_new2(str);
+}
 #endif
 
 static void init_safe_functions(void)
