@@ -1246,10 +1246,10 @@ static VALUE rbncurs_mvwchgat(VALUE dummy, VALUE arg1, VALUE arg2, VALUE arg3, V
 static VALUE rbncurs_mvwdelch(VALUE dummy, VALUE arg1, VALUE arg2, VALUE arg3) {
     return INT2NUM(mvwdelch(get_window(arg1),  NUM2INT(arg2),  NUM2INT(arg3)));
 }
-static VALUE rbncurs_mvwgetch(VALUE dummy, VALUE arg1, VALUE arg2, VALUE arg3) {
-    WINDOW * c_win = get_window(arg1);
-    int windelay = NUM2INT(rb_iv_get(arg1, "@timeout"));
-    if (wmove(c_win, NUM2INT(arg1),  NUM2INT(arg2)) == ERR)
+static VALUE rbncurs_mvwgetch(VALUE dummy, VALUE rb_win, VALUE rb_y, VALUE rb_x) {
+    WINDOW * c_win = get_window(rb_win);
+    int windelay = NUM2INT(rb_iv_get(rb_win, "@timeout"));
+    if (wmove(c_win, NUM2INT(rb_y),  NUM2INT(rb_x)) == ERR)
         return INT2NUM(ERR);
     return INT2NUM(rbncurshelper_nonblocking_wgetch(c_win, windelay));
 }
