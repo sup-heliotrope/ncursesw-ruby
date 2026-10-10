@@ -2896,6 +2896,9 @@ void Init_ncursesw_bin(void)
 }
 static void Init_ncurses_full(void)
 {
+    static bool already_done = false;
+    if (already_done) return;
+
     init_globals_1();
     init_globals_2();
     init_functions_0();
@@ -2913,4 +2916,6 @@ static void Init_ncurses_full(void)
 #if defined(HAVE_MENU_H) || defined(HAVE_NCURSESW_MENU_H)
     init_menu();
 #endif
+
+    already_done = true;
 }
