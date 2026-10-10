@@ -223,6 +223,9 @@ long rbncurs_array_length(VALUE array)
   return NUM2LONG(rb_funcall(array, rb_intern("length"), 0));
 }
 
+static const struct rb_data_type_struct window_rbtype = {
+    .wrap_struct_name = "Ncurses::WINDOW",
+};
 VALUE   wrap_window(WINDOW* window)
 {
     if (window == 0) return Qnil;
@@ -231,7 +234,7 @@ VALUE   wrap_window(WINDOW* window)
         VALUE window_adress  = INT2NUM((long)(window));
         VALUE rb_window      = rb_hash_aref(windows_hash, window_adress);
         if (rb_window == Qnil) {
-            rb_window = Data_Wrap_Struct(cWINDOW, 0, 0, window);
+            rb_window = TypedData_Wrap_Struct(cWINDOW, &window_rbtype, window);
             rb_iv_set(rb_window, "@destroyed", Qfalse);
             rb_iv_set(rb_window, "@timeout", INT2FIX(-1));
             rb_hash_aset(windows_hash, window_adress, rb_window);
@@ -247,7 +250,7 @@ WINDOW* get_window(VALUE rb_window)
         rb_raise(eNcurses, "Attempt to access a destroyed window");
         return 0;
     }
-    Data_Get_Struct(rb_window, WINDOW, window);
+    TypedData_Get_Struct(rb_window, WINDOW, &window_rbtype, window);
     return window;
 }
 static VALUE rbncurs_delwin(VALUE dummy, VALUE arg1) {
@@ -259,6 +262,9 @@ static VALUE rbncurs_delwin(VALUE dummy, VALUE arg1) {
     return INT2NUM(delwin(window));
 }
 
+static const struct rb_data_type_struct screen_rbtype = {
+    .wrap_struct_name = "Ncurses::SCREEN",
+};
 static VALUE   wrap_screen(SCREEN* screen)
 {
     if (screen == 0) return Qnil;
@@ -267,7 +273,7 @@ static VALUE   wrap_screen(SCREEN* screen)
         VALUE screen_adress  = INT2NUM((long)(screen));
         VALUE rb_screen      = rb_hash_aref(screens_hash, screen_adress);
         if (rb_screen == Qnil) {
-            rb_screen = Data_Wrap_Struct(cSCREEN, 0, 0, screen);
+            rb_screen = TypedData_Wrap_Struct(cSCREEN, &screen_rbtype, screen);
             rb_iv_set(rb_screen, "@destroyed", Qfalse);
             rb_hash_aset(screens_hash, screen_adress, rb_screen);
         }
@@ -282,7 +288,7 @@ static SCREEN* get_screen(VALUE rb_screen)
         rb_raise(eNcurses, "Attempt to access a destroyed screen");
         return 0;
     }
-    Data_Get_Struct(rb_screen, SCREEN, screen);
+    TypedData_Get_Struct(rb_screen, SCREEN, &screen_rbtype, screen);
     return screen;
 }
 #ifdef HAVE_DELSCREEN

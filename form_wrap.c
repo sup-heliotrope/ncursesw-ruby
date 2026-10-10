@@ -253,6 +253,9 @@ void init_form_opts_constants() {
 /*
  * FIELD wrapper
  */
+static const struct rb_data_type_struct field_rbtype = {
+    .wrap_struct_name = "Ncurses::Form::FIELDTYPE",
+};
 static VALUE wrap_field(FIELD* field)
 {
   if (field == 0) return Qnil;
@@ -261,7 +264,7 @@ static VALUE wrap_field(FIELD* field)
 	 VALUE field_adress  = INT2NUM((long)(field));
 	 VALUE rb_field      = rb_hash_aref(fields_hash, field_adress);
 	 if (rb_field == Qnil) {
-		rb_field = Data_Wrap_Struct(cFIELD, 0, 0, field);
+		rb_field = TypedData_Wrap_Struct(cFIELD, &field_rbtype, field);
 		rb_iv_set(rb_field, "@destroyed", Qfalse);
 		rb_hash_aset(fields_hash, field_adress, rb_field);
 	 }
@@ -276,13 +279,16 @@ static FIELD* get_field(VALUE rb_field)
 	 rb_raise(rb_eRuntimeError, "Attempt to access a destroyed field");
 	 return 0;
   }
-  Data_Get_Struct(rb_field, FIELD, field);
+  TypedData_Get_Struct(rb_field, FIELD, &field_rbtype, field);
   return field;
 }
 
 /*
  * FIELDTYPE wrapper
  */
+static const struct rb_data_type_struct fieldtype_rbtype = {
+    .wrap_struct_name = "Ncurses::Form::FIELD",
+};
 static VALUE wrap_fieldtype(FIELDTYPE* fieldtype)
 {
   if (fieldtype == NULL) return Qnil;
@@ -291,7 +297,7 @@ static VALUE wrap_fieldtype(FIELDTYPE* fieldtype)
 	 VALUE fieldtype_adress  = INT2NUM((long)(fieldtype));
 	 VALUE rb_fieldtype      = rb_hash_aref(fieldtypes_hash, fieldtype_adress);
 	 if (rb_fieldtype == Qnil) {
-		rb_fieldtype = Data_Wrap_Struct(cFIELDTYPE, 0, 0, fieldtype);
+		rb_fieldtype = TypedData_Wrap_Struct(cFIELDTYPE, &fieldtype_rbtype, fieldtype);
 		rb_iv_set(rb_fieldtype, "@destroyed", Qfalse);
 		rb_hash_aset(fieldtypes_hash, fieldtype_adress, rb_fieldtype);
 	 }
@@ -306,13 +312,16 @@ static FIELDTYPE* get_fieldtype(VALUE rb_fieldtype)
 	 rb_raise(rb_eRuntimeError, "Attempt to access a destroyed fieldtype");
 	 return 0;
   }
-  Data_Get_Struct(rb_fieldtype, FIELDTYPE, fieldtype);
+  TypedData_Get_Struct(rb_fieldtype, FIELDTYPE, &fieldtype_rbtype, fieldtype);
   return fieldtype;
 }
 
 /*
  * FORM wrapper
  */
+static const struct rb_data_type_struct form_rbtype = {
+    .wrap_struct_name = "Ncurses::Form::FORM",
+};
 static VALUE wrap_form(FORM* form)
 {
   if (form == 0) return Qnil;
@@ -321,7 +330,7 @@ static VALUE wrap_form(FORM* form)
 	 VALUE form_adress  = INT2NUM((long)(form));
 	 VALUE rb_form      = rb_hash_aref(forms_hash, form_adress);
 	 if (rb_form == Qnil) {
-		rb_form = Data_Wrap_Struct(cFORM, 0, 0, form);
+		rb_form = TypedData_Wrap_Struct(cFORM, &form_rbtype, form);
 		rb_iv_set(rb_form, "@destroyed", Qfalse);
 		rb_hash_aset(forms_hash, form_adress, rb_form);
 	 }
@@ -336,7 +345,7 @@ static FORM* get_form(VALUE rb_form)
 	 rb_raise(rb_eRuntimeError, "Attempt to access a destroyed form");
 	 return 0;
   }
-  Data_Get_Struct(rb_form, FORM, form);
+  TypedData_Get_Struct(rb_form, FORM, &form_rbtype, form);
   return form;
 }
 

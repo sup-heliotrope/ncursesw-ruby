@@ -140,6 +140,9 @@ void init_menu_opts_constants(void)
 /*
  * ITEM wrapper
  */
+static const struct rb_data_type_struct item_rbtype = {
+    .wrap_struct_name = "Ncurses::Menu::ITEM",
+};
 static VALUE wrap_item(ITEM *item)
 {
   if (item == 0) return Qnil;
@@ -150,7 +153,7 @@ static VALUE wrap_item(ITEM *item)
 
 	 if (rb_item == Qnil)
 	 {
-		rb_item = Data_Wrap_Struct(cITEM, 0, 0, item);
+		rb_item = TypedData_Wrap_Struct(cITEM, &item_rbtype, item);
 		rb_iv_set(rb_item, "@destroyed", Qfalse);
 		rb_hash_aset(items_hash, item_address, rb_item);
 	 }
@@ -167,7 +170,7 @@ static ITEM *get_item(VALUE rb_item)
 	 rb_raise(rb_eRuntimeError, "Attempt to access a destroyed item");
 	 return 0;
   }
-  Data_Get_Struct(rb_item, ITEM, item);
+  TypedData_Get_Struct(rb_item, ITEM, &item_rbtype, item);
   return item;
 }
 
@@ -175,6 +178,9 @@ static ITEM *get_item(VALUE rb_item)
 /*
  * MENU wrapper
  */
+static const struct rb_data_type_struct menu_rbtype = {
+    .wrap_struct_name = "Ncurses::Menu::MENU",
+};
 static VALUE wrap_menu(MENU *menu)
 {
   if (menu == 0) return Qnil;
@@ -185,7 +191,7 @@ static VALUE wrap_menu(MENU *menu)
 
 	 if (rb_menu == Qnil)
 	 {
-		rb_menu = Data_Wrap_Struct(cMENU, 0, 0, menu);
+		rb_menu = TypedData_Wrap_Struct(cMENU, &menu_rbtype, menu);
 		rb_iv_set(rb_menu, "@destroyed", Qfalse);
 		rb_hash_aset(menus_hash, menu_address, rb_menu);
 	 }
@@ -202,7 +208,7 @@ static MENU *get_menu(VALUE rb_menu)
 	 rb_raise(rb_eRuntimeError, "Attempt to access a destroyed menu");
 	 return 0;
   }
-  Data_Get_Struct(rb_menu, MENU, menu);
+  TypedData_Get_Struct(rb_menu, MENU, &menu_rbtype, menu);
   return menu;
 }
 

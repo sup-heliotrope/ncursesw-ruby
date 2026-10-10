@@ -29,6 +29,9 @@
 VALUE mPanel;
 VALUE cPANEL;
 
+static const struct rb_data_type_struct panel_rbtype = {
+    .wrap_struct_name = "Ncurses::Panel::PANEL",
+};
 static VALUE wrap_panel(PANEL* panel)
 {
     if (panel == 0) return Qnil;
@@ -37,7 +40,7 @@ static VALUE wrap_panel(PANEL* panel)
         VALUE panel_adress  = INT2NUM((long)(panel));
         VALUE rb_panel      = rb_hash_aref(panels_hash, panel_adress);
         if (rb_panel == Qnil) {
-            rb_panel = Data_Wrap_Struct(cPANEL, 0, 0, panel);
+            rb_panel = TypedData_Wrap_Struct(cPANEL, &panel_rbtype, panel);
             rb_iv_set(rb_panel, "@destroyed", Qfalse);
             rb_hash_aset(panels_hash, panel_adress, rb_panel);
         }
@@ -52,7 +55,7 @@ static PANEL* get_panel(VALUE rb_panel)
         rb_raise(rb_eRuntimeError, "Attempt to access a destroyed panel");
         return 0;
     }
-    Data_Get_Struct(rb_panel, PANEL, panel);
+    TypedData_Get_Struct(rb_panel, PANEL, &panel_rbtype, panel);
     return panel;
 }
 static VALUE rbncurs_c_del_panel(VALUE rb_panel) {
