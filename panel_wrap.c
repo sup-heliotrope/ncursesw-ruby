@@ -29,8 +29,13 @@
 VALUE mPanel;
 VALUE cPANEL;
 
+static void panel_rb_mark(void * panel) {
+    const void * userptr = panel_userptr((PANEL*)panel);
+    if (userptr != NULL) rb_gc_mark((VALUE)userptr);
+}
 static const struct rb_data_type_struct panel_rbtype = {
     .wrap_struct_name = "Ncurses::Panel::PANEL",
+    .function.dmark = panel_rb_mark,
 };
 static VALUE wrap_panel(PANEL* panel)
 {
