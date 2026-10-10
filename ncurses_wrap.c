@@ -2090,7 +2090,6 @@ static void init_functions_2(void) {
     NCFUNC(wvline, 3);
     NCFUNC(color_content, 4);
     NCFUNC(pair_content, 3);
-    NCFUNC(pair_content, 3);
 #ifdef HAVE_GETWIN
     NCFUNC(getwin, 1);
 #endif
