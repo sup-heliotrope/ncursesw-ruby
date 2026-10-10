@@ -586,8 +586,8 @@ static VALUE rbncurs_addch(VALUE dummy, VALUE arg1) {
 }
 #ifdef HAVE_ADD_WCH
 static VALUE rbncurs_add_wch(VALUE dummy, VALUE arg1) {
-  wchar_t c = NUM2ULONG(arg1);
-  return INT2NUM(add_wch((cchar_t *)&c));
+  cchar_t c = { 0, { NUM2ULONG(arg1), 0 } };
+  return INT2NUM(add_wch(&c));
 }
 #endif
 static VALUE rbncurs_addchnstr(VALUE dummy, VALUE arg1, VALUE arg2) {
