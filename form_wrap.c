@@ -287,7 +287,7 @@ static FIELD* get_field(VALUE rb_field)
  * FIELDTYPE wrapper
  */
 static const struct rb_data_type_struct fieldtype_rbtype = {
-    .wrap_struct_name = "Ncurses::Form::FIELD",
+    .wrap_struct_name = "Ncurses::Form::FIELDTYPE",
 };
 static VALUE wrap_fieldtype(FIELDTYPE* fieldtype)
 {
