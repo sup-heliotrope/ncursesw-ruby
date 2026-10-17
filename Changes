@@ -1,3 +1,14 @@
+ncurses-ruby-1.4.14
+ * Fixed segfault when calling tigetstr() for a non-existent capability.
+ * Fixed incorrect binding of wenclose(), mvwgetch(), and add_wch().
+ * Added missing NULL checks for functions which use NULL to signal an error.
+   Avoids a Ruby ArgumentError or segfault in the error cases.
+ * Replaced deprecated Data_Wrap_Struct() with TypedData_Wrap_Struct()
+   to get type checking for passed-in structs and avoid deprecation warnings.
+ * Fixed potential use-after-free for PANEL userptr.
+ * Fixed redefinition of methods when Ncurses.new_term or Ncurses.initscr
+   are called multiple times.
+
 ncurses-ruby-1.4.13
  * Fixed compilation errors under C23 due to unprototyped functions.
 
