@@ -913,6 +913,7 @@ static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_f
 #else
       rb_thread_fd_select(infd + 1, rfds, NULL, NULL, &tv);
 #endif
+      rb_fd_term(rfds);
 
 #else
 #if HAVE_CLOCK_GETTIME
