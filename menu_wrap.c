@@ -781,7 +781,9 @@ static VALUE rbncurs_m_pos_menu_cursor(VALUE dummy, VALUE rb_menu)
 static VALUE rbncurs_c_item_name(VALUE rb_item)
 {
   ITEM *item = get_item(rb_item);
-  return rb_str_new2(item_name(item));
+  char *str = item_name(item);
+  if (str == NULL) return Qnil;
+  return rb_str_new2(str);
 }
 static VALUE rbncurs_m_item_name(VALUE dummy, VALUE rb_item)
 { return rbncurs_c_item_name(rb_item); }
@@ -789,7 +791,9 @@ static VALUE rbncurs_m_item_name(VALUE dummy, VALUE rb_item)
 static VALUE rbncurs_c_item_description(VALUE rb_item)
 {
   ITEM *item = get_item(rb_item);
-  return rb_str_new2(item_description(item));
+  char *str = item_description(item);
+  if (str == NULL) return Qnil;
+  return rb_str_new2(str);
 }
 static VALUE rbncurs_m_item_description(VALUE dummy, VALUE rb_item)
 { return rbncurs_c_item_description(rb_item); }
