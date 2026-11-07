@@ -861,6 +861,7 @@ static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_f
 #else
     fd_set in_fds;
 #endif
+    bool ready = false;
     struct timeval tv;
 #ifdef HAVE_CLOCK_GETTIME
     struct timespec ts;
@@ -873,7 +874,7 @@ static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_f
 #endif
     finishtime = starttime + delay;
     wtimeout(c_win, 0);
-    while (doupdate() /* detects resize */, (result = _wgetch_func(c_win)) == ERR) {
+    while (doupdate() /* detects resize */, (result = _wgetch_func(c_win)) == ERR && !ready) {
 #ifdef HAVE_CLOCK_GETTIME
       clock_gettime (CLOCK_MONOTONIC, &ts);
       nowtime = ts.tv_sec + ts.tv_nsec * 1e-9;
@@ -894,11 +895,13 @@ static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_f
       rb_fd_init(&in_fds);
       rb_fd_set(infd, &in_fds);
       rb_thread_fd_select(infd + 1, &in_fds, NULL, NULL, &tv);
+      ready = rb_fd_isset(infd, &in_fds);
       rb_fd_term(&in_fds);
 #else
       FD_ZERO(&in_fds);
       FD_SET(infd, &in_fds);
       rb_thread_select(infd + 1, &in_fds, NULL, NULL, &tv);
+      ready = FD_ISSET(infd, &in_fds);
 #endif
     }
     wtimeout(c_win, windelay);
