@@ -857,13 +857,12 @@ static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_f
     double starttime, nowtime, finishtime;
     double resize_delay = NUM2INT(get_RESIZEDELAY(mNcurses)) / 1000.0;
     fd_set in_fds;
-#ifdef HAVE_CLOCK_GETTIME
-    struct timespec tv;
-    struct timeval  ts;
-    clock_gettime (CLOCK_MONOTONIC, &tv);
-    starttime = tv.tv_sec + tv.tv_nsec * 1e-9;
-#else
     struct timeval tv;
+#ifdef HAVE_CLOCK_GETTIME
+    struct timespec ts;
+    clock_gettime (CLOCK_MONOTONIC, &ts);
+    starttime = ts.tv_sec + ts.tv_nsec * 1e-9;
+#else
     struct timezone tz = {0,0};
     gettimeofday(&tv, &tz);
     starttime = tv.tv_sec + tv.tv_usec * 1e-6;
@@ -876,8 +875,8 @@ static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_f
       rb_fdset_t *rfds = NULL;
 #endif
 #ifdef HAVE_CLOCK_GETTIME
-      clock_gettime (CLOCK_MONOTONIC, &tv);
-      nowtime = tv.tv_sec + tv.tv_nsec * 1e-9;
+      clock_gettime (CLOCK_MONOTONIC, &ts);
+      nowtime = ts.tv_sec + ts.tv_nsec * 1e-9;
 #else
       gettimeofday(&tv, &tz);
       nowtime = tv.tv_sec + tv.tv_usec * 1e-6;
@@ -888,16 +887,7 @@ static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_f
       /* Check for terminal size change every resize_delay seconds */
       if (resize_delay > delay) resize_delay = delay;
       tv.tv_sec = (time_t)resize_delay;
-#ifdef HAVE_CLOCK_GETTIME
-      tv.tv_nsec = (unsigned)( (resize_delay - tv.tv_sec) * 1e9 );
-#else
       tv.tv_usec = (unsigned)( (resize_delay - tv.tv_sec) * 1e6 );
-#endif
-
-#if HAVE_CLOCK_GETTIME
-      ts.tv_sec = tv.tv_sec;
-      ts.tv_usec = tv.tv_nsec * 1e-3;
-#endif
 
       /* sleep on infd until input is available or tv reaches timeout */
       FD_ZERO(&in_fds);
@@ -907,20 +897,10 @@ static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_f
       rfds = &fdsets[0];
       rb_fd_init(rfds);
       rb_fd_copy(rfds, &in_fds, infd +1);
-
-#if HAVE_CLOCK_GETTIME
-      rb_thread_fd_select(infd + 1, rfds, NULL, NULL, &ts);
-#else
       rb_thread_fd_select(infd + 1, rfds, NULL, NULL, &tv);
-#endif
       rb_fd_term(rfds);
-
-#else
-#if HAVE_CLOCK_GETTIME
-      rb_thread_select(infd + 1, &in_fds, NULL, NULL, &ts);
 #else
       rb_thread_select(infd + 1, &in_fds, NULL, NULL, &tv);
-#endif
 #endif
     }
     wtimeout(c_win, windelay);
