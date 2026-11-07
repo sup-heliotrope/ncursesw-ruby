@@ -856,7 +856,11 @@ static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_f
     int result;
     double starttime, nowtime, finishtime;
     double resize_delay = NUM2INT(get_RESIZEDELAY(mNcurses)) / 1000.0;
+#ifdef HAVE_RB_THREAD_FD_SELECT
+    rb_fdset_t in_fds;
+#else
     fd_set in_fds;
+#endif
     struct timeval tv;
 #ifdef HAVE_CLOCK_GETTIME
     struct timespec ts;
@@ -870,10 +874,6 @@ static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_f
     finishtime = starttime + delay;
     wtimeout(c_win, 0);
     while (doupdate() /* detects resize */, (result = _wgetch_func(c_win)) == ERR) {
-#ifdef HAVE_RB_THREAD_FD_SELECT
-      rb_fdset_t fdsets[3];
-      rb_fdset_t *rfds = NULL;
-#endif
 #ifdef HAVE_CLOCK_GETTIME
       clock_gettime (CLOCK_MONOTONIC, &ts);
       nowtime = ts.tv_sec + ts.tv_nsec * 1e-9;
@@ -890,16 +890,14 @@ static int rbncurshelper_do_wgetch_functor (WINDOW *c_win, wgetch_func _wgetch_f
       tv.tv_usec = (unsigned)( (resize_delay - tv.tv_sec) * 1e6 );
 
       /* sleep on infd until input is available or tv reaches timeout */
+#ifdef HAVE_RB_THREAD_FD_SELECT
+      rb_fd_init(&in_fds);
+      rb_fd_set(infd, &in_fds);
+      rb_thread_fd_select(infd + 1, &in_fds, NULL, NULL, &tv);
+      rb_fd_term(&in_fds);
+#else
       FD_ZERO(&in_fds);
       FD_SET(infd, &in_fds);
-
-#ifdef HAVE_RB_THREAD_FD_SELECT
-      rfds = &fdsets[0];
-      rb_fd_init(rfds);
-      rb_fd_copy(rfds, &in_fds, infd +1);
-      rb_thread_fd_select(infd + 1, rfds, NULL, NULL, &tv);
-      rb_fd_term(rfds);
-#else
       rb_thread_select(infd + 1, &in_fds, NULL, NULL, &tv);
 #endif
     }
