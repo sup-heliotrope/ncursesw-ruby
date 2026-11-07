@@ -28,6 +28,7 @@
 
 #if defined(HAVE_MENU_H) || defined(HAVE_NCURSESW_MENU_H)
 
+#include <ruby/util.h>
 #include "menu_wrap.h"
 #include "ncurses_wrap.h"
 #include "compat.h"
@@ -379,16 +380,32 @@ static VALUE rbncurs_m_item_index(VALUE dummy, VALUE rb_item)
  * Item creation/destruction functions - mitem_new(3X) man page
  */
 static VALUE rbncurs_m_new_item(VALUE dummy, VALUE name, VALUE description)
-{ return wrap_item(new_item(STR2CSTR(name), STR2CSTR(description))); }
+{
+  char *c_name = ruby_strdup(STR2CSTR(name));
+  char *c_desc = ruby_strdup(STR2CSTR(description));
+  ITEM *item = new_item(c_name, c_desc);
+  if (item == NULL) { xfree(c_name); xfree(c_desc); return Qnil; }
+  if (item_description(item) != c_desc) {
+    /* ncurses rejected the description */
+    xfree(c_desc);
+  }
+  return wrap_item(item);
+}
 
 static VALUE rbncurs_c_free_item(VALUE rb_item)
 {
   VALUE items_hash   = rb_iv_get(mMenu, "@items_hash");
   ITEM *item       = get_item(rb_item);
   VALUE item_address  = INT2NUM((long)(item));
+  char *c_name = (char *)item_name(item);
+  char *c_desc = (char *)item_description(item);
+  int result = free_item(item);
+  if (result != E_OK) return INT2NUM(result);
+  xfree(c_name);
+  xfree(c_desc);
   rb_funcall(items_hash, rb_intern("delete"), 1, item_address);
   rb_iv_set(rb_item, "@destroyed", Qtrue);
-  return INT2NUM(free_item(item));
+  return INT2NUM(result);
 }
 static VALUE rbncurs_m_free_item(VALUE dummy, VALUE rb_item)
 { return rbncurs_c_free_item(rb_item); }
