@@ -1,3 +1,9 @@
+ncurses-ruby-1.4.15
+ * Fixed leaked rb_fdset object in every iteration of getch()/wgetch().
+ * Fixed busy-loop in getch()/wgetch() when input reaches EOF.
+ * Fixed potential use-after-free for ITEM name and description.
+ * Added missing NULL checks for ITEM name and description.
+
 ncurses-ruby-1.4.14
  * Fixed segfault when calling tigetstr() for a non-existent capability.
  * Fixed incorrect binding of wenclose(), mvwgetch(), and add_wch().
